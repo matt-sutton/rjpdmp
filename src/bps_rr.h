@@ -2,7 +2,7 @@
 #define BPS_RR_H
 #include "inversion.h"
 #include "likelyhood.h"
-#include "ModelPrior.h"
+#include "modelprior.h"
 
 //' bps_s_rr
 //'
@@ -47,7 +47,7 @@
 //'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 //'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
 //'
-//' plot_pdmp(res, margins = 1:3, inds = 1:10^4)
+//' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -280,7 +280,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 //'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
 //'
-//' plot_pdmp(res, margins = 1:3, inds = 1:10^4)
+//' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
 //'
 //' @export
 // [[Rcpp::export]]

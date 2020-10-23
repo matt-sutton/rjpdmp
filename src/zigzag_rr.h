@@ -1,7 +1,7 @@
 #ifndef ZIGZAG_RR_H
 #define ZIGZAG_RR_H
 #include "inversion.h"
-#include "ModelPrior.h"
+#include "modelprior.h"
 #include "likelyhood.h"
 
 //' zigzag_rr

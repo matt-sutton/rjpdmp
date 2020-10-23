@@ -4,7 +4,7 @@ Title: Reversible Jump PDMP samplers
 Version: 0.1.0
 Author: Matt Sutton, Augustin Chevalier, Paul Fearnhead
 Maintainer: Matt Sutton <m.sutton5@lancaster.ac.uk>
-Description: Implements the ZigZag, Bouncy Particle Sampler and collapsed Gibbs sampler for variable selection in logistic and robust regression problems.
+Description: Implements the ZigZag, Bouncy Particle Sampler and collapsed Gibbs sampler for variable selection in logistic and robust regression problems. Code for simulating Polya-Gamma random variables was adapted from https://github.com/jgscott/helloPG
 License: GPL (>= 2)
 RoxygenNote: 7.1.0
 Encoding: UTF-8

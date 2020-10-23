@@ -18,7 +18,7 @@ const double __TRUNC_RECIP = 1.0 / __TRUNC;
 class PolyaGamma
 {
 
- public:
+public:
 
   // Default constructor.
 
@@ -36,7 +36,7 @@ class PolyaGamma
 
 
 ////////////////////////////////////////////////////////////////////////////////
-				 // Utility //
+// Utility //
 ////////////////////////////////////////////////////////////////////////////////
 
 double PolyaGamma::a(int n, double x)
@@ -94,7 +94,7 @@ double PolyaGamma::rtigauss(double Z, RNG& r)
       // Slightly faster to use truncated normal.
       double E1 = r.expon_rate(1.0); double E2 = r.expon_rate(1.0);
       while ( E1*E1 > 2 * E2 / t) {
-	E1 = r.expon_rate(1.0); E2 = r.expon_rate(1.0);
+        E1 = r.expon_rate(1.0); E2 = r.expon_rate(1.0);
       }
       X = 1 + E1 * t;
       X = t / (X * X);
@@ -109,14 +109,14 @@ double PolyaGamma::rtigauss(double Z, RNG& r)
       double mu_Y    = mu  * Y;
       X = mu + half_mu * mu_Y - half_mu * sqrt(4 * mu_Y + mu_Y * mu_Y);
       if (r.unif() > mu / (mu + X))
-	X = mu*mu / X;
+        X = mu*mu / X;
     }
   }
   return X;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-				  // Sample //
+// Sample //
 ////////////////////////////////////////////////////////////////////////////////
 
 // double PolyaGamma::draw(double n, double z, RNG& r)
@@ -164,12 +164,12 @@ double PolyaGamma::draw_like_devroye(double Z, RNG& r)
     while (go) {
       ++n;
       if (n%2==1) {
-	S = S - a(n, X);
-	if ( Y<=S ) return 0.25 * X;
+        S = S - a(n, X);
+        if ( Y<=S ) return 0.25 * X;
       }
       else {
-	S = S + a(n, X);
-	if ( Y>S ) go = false;
+        S = S + a(n, X);
+        if ( Y>S ) go = false;
       }
     }
 
@@ -183,13 +183,13 @@ double PolyaGamma::draw_like_devroye(double Z, RNG& r)
 // }
 
 ////////////////////////////////////////////////////////////////////////////////
-			       // END OF CLASS //
+// END OF CLASS //
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-				 // APPENDIX //
+// APPENDIX //
 ////////////////////////////////////////////////////////////////////////////////
 
 // It was not faster to use "vectorized" versions of r.gamma or r.igamma.

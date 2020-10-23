@@ -6,39 +6,6 @@
 
 using namespace Rcpp;
 
-// sim_alpha
-double sim_alpha(double s);
-RcppExport SEXP _rjpdmp_sim_alpha(SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(sim_alpha(s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// MH_alpha_S
-double MH_alpha_S(double s);
-RcppExport SEXP _rjpdmp_MH_alpha_S(SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(MH_alpha_S(s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// MH_alpha_N
-double MH_alpha_N(double s);
-RcppExport SEXP _rjpdmp_MH_alpha_N(SEXP sSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type s(sSEXP);
-    rcpp_result_gen = Rcpp::wrap(MH_alpha_N(s));
-    return rcpp_result_gen;
-END_RCPP
-}
 // bps_n_logit
 List bps_n_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay, double prior_sigma2, arma::vec x0, arma::vec theta0, double ref, double rj_val, double ppi, int nmax, int burn);
 RcppExport SEXP _rjpdmp_bps_n_logit(SEXP maxTimeSEXP, SEXP dataXSEXP, SEXP dataySEXP, SEXP prior_sigma2SEXP, SEXP x0SEXP, SEXP theta0SEXP, SEXP refSEXP, SEXP rj_valSEXP, SEXP ppiSEXP, SEXP nmaxSEXP, SEXP burnSEXP) {
@@ -123,26 +90,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_index
-arma::uvec get_index(int nsamp, int n_obs);
-RcppExport SEXP _rjpdmp_get_index(SEXP nsampSEXP, SEXP n_obsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nsamp(nsampSEXP);
-    Rcpp::traits::input_parameter< int >::type n_obs(n_obsSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_index(nsamp, n_obs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // gibbs_logit
-List gibbs_logit(const arma::mat& dataX, const arma::vec& datay, arma::vec beta, arma::vec gamma, double ppi, int nsamples, double maxTime, double prior_sigma2);
+List gibbs_logit(arma::mat dataX, arma::vec datay, arma::vec beta, arma::vec gamma, double ppi, int nsamples, double maxTime, double prior_sigma2);
 RcppExport SEXP _rjpdmp_gibbs_logit(SEXP dataXSEXP, SEXP dataySEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP ppiSEXP, SEXP nsamplesSEXP, SEXP maxTimeSEXP, SEXP prior_sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat& >::type dataX(dataXSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type datay(dataySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dataX(dataXSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type datay(dataySEXP);
     Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< double >::type ppi(ppiSEXP);
@@ -247,6 +202,39 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sim_alpha
+double sim_alpha(double s);
+RcppExport SEXP _rjpdmp_sim_alpha(SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(sim_alpha(s));
+    return rcpp_result_gen;
+END_RCPP
+}
+// MH_alpha_S
+double MH_alpha_S(double s);
+RcppExport SEXP _rjpdmp_MH_alpha_S(SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(MH_alpha_S(s));
+    return rcpp_result_gen;
+END_RCPP
+}
+// MH_alpha_N
+double MH_alpha_N(double s);
+RcppExport SEXP _rjpdmp_MH_alpha_N(SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(MH_alpha_N(s));
+    return rcpp_result_gen;
+END_RCPP
+}
 // zigzag_logit
 List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay, double prior_sigma2, arma::vec x0, arma::vec theta0, double rj_val, double ppi, int nmax, int burn);
 RcppExport SEXP _rjpdmp_zigzag_logit(SEXP maxTimeSEXP, SEXP dataXSEXP, SEXP dataySEXP, SEXP prior_sigma2SEXP, SEXP x0SEXP, SEXP theta0SEXP, SEXP rj_valSEXP, SEXP ppiSEXP, SEXP nmaxSEXP, SEXP burnSEXP) {
@@ -310,14 +298,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rjpdmp_sim_alpha", (DL_FUNC) &_rjpdmp_sim_alpha, 1},
-    {"_rjpdmp_MH_alpha_S", (DL_FUNC) &_rjpdmp_MH_alpha_S, 1},
-    {"_rjpdmp_MH_alpha_N", (DL_FUNC) &_rjpdmp_MH_alpha_N, 1},
     {"_rjpdmp_bps_n_logit", (DL_FUNC) &_rjpdmp_bps_n_logit, 11},
     {"_rjpdmp_bps_s_logit", (DL_FUNC) &_rjpdmp_bps_s_logit, 11},
     {"_rjpdmp_bps_s_rr", (DL_FUNC) &_rjpdmp_bps_s_rr, 11},
     {"_rjpdmp_bps_n_rr", (DL_FUNC) &_rjpdmp_bps_n_rr, 11},
-    {"_rjpdmp_get_index", (DL_FUNC) &_rjpdmp_get_index, 2},
     {"_rjpdmp_gibbs_logit", (DL_FUNC) &_rjpdmp_gibbs_logit, 8},
     {"_rjpdmp_linear_inv_t", (DL_FUNC) &_rjpdmp_linear_inv_t, 3},
     {"_rjpdmp_get_time_off_hp_ind", (DL_FUNC) &_rjpdmp_get_time_off_hp_ind, 4},
@@ -326,6 +310,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rjpdmp_log_logit", (DL_FUNC) &_rjpdmp_log_logit, 3},
     {"_rjpdmp_get_grad_logit", (DL_FUNC) &_rjpdmp_get_grad_logit, 4},
     {"_rjpdmp_get_grad_resid_rr", (DL_FUNC) &_rjpdmp_get_grad_resid_rr, 4},
+    {"_rjpdmp_sim_alpha", (DL_FUNC) &_rjpdmp_sim_alpha, 1},
+    {"_rjpdmp_MH_alpha_S", (DL_FUNC) &_rjpdmp_MH_alpha_S, 1},
+    {"_rjpdmp_MH_alpha_N", (DL_FUNC) &_rjpdmp_MH_alpha_N, 1},
     {"_rjpdmp_zigzag_logit", (DL_FUNC) &_rjpdmp_zigzag_logit, 10},
     {"_rjpdmp_zigzag_logit_ss", (DL_FUNC) &_rjpdmp_zigzag_logit_ss, 11},
     {"_rjpdmp_zigzag_rr", (DL_FUNC) &_rjpdmp_zigzag_rr, 10},

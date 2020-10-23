@@ -30,7 +30,7 @@ arma::vec rpg(arma::vec shape, arma::vec scale) {
   return result;
 }
 
-double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
+double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
   double s = sum(gamma);
   if( s < 1 ){
     return(0);
@@ -52,7 +52,7 @@ double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec 
 //' @param maxTime Maximum runtime (in Seconds) of the algorithm; will terminate the code after a given computation time or nmax iterations of the algorithm is reached.
 //' @param dataX Matrix of all covariates where the i-th row corresponds to all p covariates x_{i,1}, ..., x_{i,p} of the i-th observation.
 //' @param datay Vector of n observations of a {0, 1}-valued variable y.
-//' @param prior_sigma2 Double for the prior variance for included variables.
+//' @param prior_sigma2 Double for the prior variance for included variables. Default 10.
 //' @param beta Initial position of the regression parameter
 //' @param gamma Initial model for the sampler. Enteries should either be 1s or 0s.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
@@ -89,12 +89,12 @@ double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec 
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(zigzag_fit, margins = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]
-List gibbs_logit(const arma::mat& dataX, const arma::vec& datay, arma::vec beta, arma::vec gamma,
-                 double ppi = 0.5, int nsamples = 10^5, double maxTime = 10^8, double prior_sigma2 = 1.0){
+List gibbs_logit(arma::mat dataX, arma::vec datay, arma::vec beta, arma::vec gamma,
+                 double ppi = 0.5, int nsamples = 10^5, double maxTime = 10^8, double prior_sigma2 = 10.0){
   arma::wall_clock timer;
   timer.tic();
   int n = datay.size();
@@ -104,7 +104,7 @@ List gibbs_logit(const arma::mat& dataX, const arma::vec& datay, arma::vec beta,
   arma::vec omega2(n), gamma_change(p), times(nsamples), pgscale(n), pgshape(n);
   omega2.ones();  pgscale.ones();
 
-  double ratio_val, p_gamma_change, p_flip, g_fun_cashe, prior_diff_gamma;
+  double ratio_val, p_gamma_change, g_fun_cashe, prior_diff_gamma;
 
   arma::vec kappa = datay -0.5*arma::ones(n,1);
   arma::mat beta_samples = arma::zeros(p,nsamples);

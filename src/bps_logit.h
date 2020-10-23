@@ -1,7 +1,7 @@
 #ifndef BPS_LOGIT_H
 #define BPS_LOGIT_H
 #include "inversion.h"
-#include "ModelPrior.h"
+#include "modelprior.h"
 #include "likelyhood.h"
 
 //' bps_n_logit
@@ -52,7 +52,7 @@
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(bps_fit, margins = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]
@@ -272,7 +272,8 @@ List bps_n_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(bps_fit, margins = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+//'           mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]

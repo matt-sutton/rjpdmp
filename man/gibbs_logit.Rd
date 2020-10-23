@@ -12,7 +12,7 @@ gibbs_logit(
   ppi = 0.5,
   nsamples = 10^5L,
   maxTime = 10^8,
-  prior_sigma2 = 1
+  prior_sigma2 = 10
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ gibbs_logit(
 
 \item{maxTime}{Maximum runtime (in Seconds) of the algorithm; will terminate the code after a given computation time or nmax iterations of the algorithm is reached.}
 
-\item{prior_sigma2}{Double for the prior variance for included variables.}
+\item{prior_sigma2}{Double for the prior variance for included variables. Default 10.}
 }
 \value{
 Returns a list with the following objects:
@@ -74,6 +74,6 @@ gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
                          ppi = ppi)
 
-plot_pdmp(zigzag_fit, margins = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 
 }

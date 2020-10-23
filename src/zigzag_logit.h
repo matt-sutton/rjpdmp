@@ -2,8 +2,7 @@
 #define ZIGZAG_LOGIT_H
 
 #include "inversion.h"
-#include "get_index.h"
-#include "ModelPrior.h"
+#include "modelprior.h"
 #include "likelyhood.h"
 
 
@@ -54,7 +53,8 @@
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(zigzag_fit, margins = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+//'            mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]
@@ -254,7 +254,7 @@ bool check_cv(arma::uvec inds_off_hp_cv, arma::uvec inds_off_hp){
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), margins = 1:2, inds = 1:length(zigzag_fit_s$times),burn = .1,
+//' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, inds = 1:length(zigzag_fit_s$times),burn = .1,
 //'                     nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
