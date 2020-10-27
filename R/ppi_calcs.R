@@ -1,14 +1,56 @@
-PPI_calc <- function(times, positions, ModelIndices = NULL, MarginalIndicies = NULL, burnin = 1, maxIter=NULL, eps = 1e-12){
-  if(!is.null(maxIter)){
-    times <- times[1:maxIter]
-    positions <- positions[,1:maxIter]
-  }
-  ## Calc Model probs
-  nMod <- length(ModelIndices)
-  pipVal <- rep(0,nMod)
-  if(!is.null(ModelIndices)){
+#' Calculate posterior pobabilities of inclusion based on PDMP trajectories
+#'
+#' Calculate either marginal probabilities of inclusions or posterior probabilities of specific models.
+#'
+#' @param times Vector of event times from the PDMP trajectory
+#' @param positions Matrix of positions from the PDMP trajectory, each column should correspond to a position
+#' @param models Optional Matrix of indicies where rows correspond to models. Will return proabilities of each model \code{prob_mod}.
+#' @param marginals Optional Vector of indices to calculate the marginal probabilities of inclusion. Will return proabilities of inclusion for variable index \code{marginal_prob}.
+#' @param burnin Number of events to use as burnin
+#' @return Returns a list with the following objects:
+#' @return \code{prob_mod}: Vector of posterior model probabilities based on the PDMP trajectories
+#' @return \code{marginal_prob}: Vector of marginal probabilities for inclusion
+#' @examples
+#' generate.logistic.data <- function(beta, n.obs, Sig) {
+#' p <- length(beta)
+#' dataX <- MASS::mvrnorm(n=n.obs,mu=rep(0,p),Sigma=Sig)
+#' vals <- dataX %*% as.vector(beta)
+#' generateY <- function(p) { rbinom(1, 1, p)}
+#' dataY <- sapply(1/(1 + exp(-vals)), generateY)
+#' return(list(dataX = dataX, dataY = dataY))
+#' }
+#'
+#' n <- 15
+#' p <- 25
+#' beta <- c(1, rep(0, p-1))
+#' Siginv <- diag(1,p,p)
+#' Siginv[1,2] <- Siginv[2,1] <- 0.9
+#' set.seed(1)
+#' data <- generate.logistic.data(beta, n, solve(Siginv))
+#' ppi <- 2/p
+#'
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+#'                            ppi = ppi)
+#' a <- models_visited(zigzag_fit$theta)
+#'
+#' # Work out probability of top 10 most visited models and all marginal inclusion probabilities
+#' # specific model probabilites become trivially small for large dimensions
+#' b <- model_probabilities(zigzag_fit$times, zigzag_fit$positions, models = a[1:10,1:p], marginals=1:p)
+#'
+#'
+model_probabilities <- function(times, positions, models = NULL, marginals = NULL, burnin = 1){
+  eps = 1e-12
+  ## Calculate model probabilities
+  prob_mod <- NULL
+  if(!is.null(models)){
+    if(is.null(nrow(models))){
+      models <- matrix(models, nrow = 1)
+    }
+    nMod <- nrow(models)
+    prob_mod <- rep(0,nMod)
     for( Mi in 1:nMod ){
-      ZeroInds <- which(strsplit(ModelIndices[Mi],'')[[1]] != "1")
+      ZeroInds <- which( abs(models[Mi,]) < eps )
       t_dirac = 0
       for(i in burnin:(length(times)-1)){
         if(all(abs(positions[-ZeroInds,i]) > eps) && all(abs(positions[ZeroInds,i]) < eps) &&
@@ -16,197 +58,171 @@ PPI_calc <- function(times, positions, ModelIndices = NULL, MarginalIndicies = N
           t_dirac = t_dirac + times[i+1] - times[i]
         }
       }
-      pipVal[Mi] <- t_dirac/(max(times)-times[burnin])
+      prob_mod[Mi] <- t_dirac/(max(times)-times[burnin])
     }
-    names(pipVal) <- ModelIndices
+    names(prob_mod) <- apply(models,1,function(s) paste(s, collapse = ''))
   }
 
-  ## Calc Marginal
-  nMI <- length(MarginalIndicies)
-  margVal <- rep(0, nMI)
-  if(!is.null(MarginalIndicies)){
+  ## Calculate Marginal probabilities
+  nMI <- length(marginals)
+  marginal_prob_inclusion <- rep(0, nMI)
+  if(!is.null(marginals)){
     for( Mi in 1:nMI){
-      ZeroInds <- MarginalIndicies[Mi]
+      ZeroInds <- marginals[Mi]
       t_dirac <- 0
       for(i in burnin:(length(times)-1)){
         if( positions[ZeroInds,i] == 0 && positions[ZeroInds,i+1] == 0 ){
           t_dirac = t_dirac + times[i+1] - times[i]
         }
       }
-      margVal[Mi] <- 1-t_dirac/(max(times)-times[burnin])
+      marginal_prob_inclusion[Mi] <- 1-t_dirac/(max(times)-times[burnin])
     }
-    names(margVal) <- MarginalIndicies
+    names(marginal_prob_inclusion) <- marginals
   }
-  return(list(pip_Models = pipVal, pip_Marginal = margVal))
+  return(list(prob_mod = prob_mod, marginal_prob = marginal_prob_inclusion))
 }
 
-PPI_calc_running <- function(times, positions, MarginalIndicies = NULL, burnin = 1, maxIter=NULL, eps = 1e-12){
-  if(!is.null(maxIter)){
-    times <- times[1:maxIter]
-    positions <- positions[,1:maxIter]
-  }
+#' Count the number of times a model is visited
+#'
+#' @param thetas Vector of model indicies from the PDMP trajectory or samples from an MCMC sampler
+#' @return Returns a Matrix with rows corresponding to models and a final column corresponding to the number of times the model is visited
+#' @examples
+#' generate.logistic.data <- function(beta, n.obs, Sig) {
+#' p <- length(beta)
+#' dataX <- MASS::mvrnorm(n=n.obs,mu=rep(0,p),Sigma=Sig)
+#' vals <- dataX %*% as.vector(beta)
+#' generateY <- function(p) { rbinom(1, 1, p)}
+#' dataY <- sapply(1/(1 + exp(-vals)), generateY)
+#' return(list(dataX = dataX, dataY = dataY))
+#' }
+#'
+#' n <- 15
+#' p <- 25
+#' beta <- c(1, rep(0, p-1))
+#' Siginv <- diag(1,p,p)
+#' Siginv[1,2] <- Siginv[2,1] <- 0.9
+#' set.seed(1)
+#' data <- generate.logistic.data(beta, n, solve(Siginv))
+#' ppi <- 2/p
+#'
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+#'                            ppi = ppi)
+#' models_visited(zigzag_fit$theta)
+#'
+models_visited <- function(thetas){
+  df <- data.table::data.table(t(abs(thetas)) > 1e-10)
+  df <- as.matrix(df[,.(COUNT = .N), by = names(df)])
+  df <- df[order(df[,NCOL(df)], decreasing = T),]
+  vnames <- 1:(NCOL(df)-1)
+  colnames(df) <- c(vnames, 'count')
+  return(df)
+}
+
+#' Calculate the marginal mean
+#'
+#' @param times Vector of event times from the PDMP trajectory
+#' @param positions Matrix of positions from the PDMP trajectory, each column should correspond to a position
+#' @param thetas Matrix of PDMP velocities
+#' @param marginals Vector of indices to calculate the marginal means.
+#' @param burnin Number of events to use as burnin
+#' @return Returns the posterior mean of the parameter estimated using the PDMP trajectories.
+#' @examples
+#' generate.logistic.data <- function(beta, n.obs, Sig) {
+#' p <- length(beta)
+#' dataX <- MASS::mvrnorm(n=n.obs,mu=rep(0,p),Sigma=Sig)
+#' vals <- dataX %*% as.vector(beta)
+#' generateY <- function(p) { rbinom(1, 1, p)}
+#' dataY <- sapply(1/(1 + exp(-vals)), generateY)
+#' return(list(dataX = dataX, dataY = dataY))
+#' }
+#'
+#' n <- 15
+#' p <- 25
+#' beta <- c(1, rep(0, p-1))
+#' Siginv <- diag(1,p,p)
+#' Siginv[1,2] <- Siginv[2,1] <- 0.9
+#' set.seed(1)
+#' data <- generate.logistic.data(beta, n, solve(Siginv))
+#' ppi <- 2/p
+#'
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+#'                            ppi = ppi)
+#' b <- marginal_mean(zigzag_fit$times, zigzag_fit$positions, zigzag_fit$theta, marginals=1:p)
+#'
+marginal_mean <- function(times, positions, thetas, marginals = NULL, burnin = 1){
   ## Calc Marginal
-  nMI <- length(MarginalIndicies)
+  eps = 1e-12
+  nMI <- length(marginals)
   maxIter <- length(times)
-  margVal <- matrix(0, nrow = nMI, maxIter -burnin -1)
-  if(!is.null(MarginalIndicies)){
+  marg_mean <- rep(0, nMI)
+  if(!is.null(marginals)){
     for( Mi in 1:nMI){
-      ZeroInds <- MarginalIndicies[Mi]
-      t_dirac <- 0
-      for(i in (burnin):(maxIter-1)){
-        if( positions[ZeroInds,i] == 0 && positions[ZeroInds,i+1] == 0 ){
-          t_dirac = t_dirac + times[i+1] - times[i]
-        }
-        margVal[Mi,i - burnin] <- 1-t_dirac/(times[i+1]-times[burnin])
-      }
-    }
-    #names(margVal) <- MarginalIndicies
-  }
-  return(list(pip_Marginal = margVal))
-}
-
-num_model <- function(times, theta, comptimes, which_seen = F, eps = 1e-10){
-  jumpTimes <- which(names(comptimes) != "Switch")
-  niter <- length(jumpTimes)
-  numvar <- rep(0, niter)
-  model_seen <- matrix(abs(theta[,1]) > eps, nrow = 1)
-  for( i in 1:niter){
-    model_i <- abs(theta[,jumpTimes[i]]) > eps
-    if( which_seen ){
-      seen <- FALSE
-      for(j in 1:nrow(model_seen)){
-        if(all(model_seen[j,] == model_i)){
-          seen <- TRUE
-          break
-        }
-      }
-      if(!seen){
-        model_seen <- rbind(model_seen, model_i)
-      }
-    }
-    numvar[i] <- sum(model_i)
-  }
-  # return number of nonzero coefficients
-  return(list(models_seen=model_seen, numer_variables=numvar, comptimes = comptimes[jumpTimes]))
-}
-num_model_gibbs <- function(gamma, comptimes, which_seen = F, eps = 1e-10){
-  niter <- length(gamma[1,])
-  numvar <- rep(0, niter)
-  model_seen <- matrix(abs(gamma[,1]) > eps, nrow = 1)
-
-  for( i in 1:niter){
-    model_i <- abs(gamma[,i]) > eps
-    if( which_seen ){
-      seen <- FALSE
-      for(j in 1:nrow(model_seen)){
-        if(all(model_seen[j,] == model_i)){
-          seen <- TRUE
-          break
-        }
-      }
-      if(!seen){
-        model_seen <- rbind(model_seen, model_i)
-      }
-    }
-    numvar[i] <- sum(model_i)
-  }
-  # return number of nonzero coefficients
-  return(list(models_seen=model_seen, numer_variables=numvar,comptimes = comptimes[1:i]))
-}
-
-
-PPI_gibbs_calc <- function(Gamma, ModelIndices = NULL, MarginalIndicies = NULL, burnin = 1, eps = 1e-12){
-
-  ## Calc Model probs
-  Gamma <- Gamma[,-c(1:burnin)]
-  nMod <- length(ModelIndices)
-  pipVal <- rep(0,nMod)
-  if(!is.null(ModelIndices)){
-    for( Mi in 1:nMod ){
-      ZeroInds <- which(strsplit(ModelIndices[Mi],'')[[1]] != "1")
-      equalMod <- apply(Gamma, 2, function(ga) all(abs(ga[-ZeroInds])>eps)&all(abs(ga[ZeroInds])<eps))
-      pipVal[Mi] <- mean(equalMod)
-    }
-    names(pipVal) <- ModelIndices
-  }
-  ## Calc Marginal
-  nMI <- length(MarginalIndicies)
-  margVal <- rep(0, nMI)
-  if(!is.null(MarginalIndicies)){
-    for( Mi in 1:nMI){
-      margVal[Mi] <- mean(Gamma[MarginalIndicies[Mi],])
-    }
-    names(margVal) <- MarginalIndicies
-  }
-  return(list(pip_Models = pipVal, pip_Marginal = margVal))
-}
-mean_marg <- function(times, positions, thetas, MarginalIndicies = NULL, burnin = 1, eps = 1e-12){
-  ## Calc Marginal
-  nMI <- length(MarginalIndicies)
-  maxIter <- length(times)
-  margVal <- matrix(0, nrow = nMI, maxIter -burnin -1)
-  pip_Marginal <- rep(0, nMI)
-  if(!is.null(MarginalIndicies)){
-    for( Mi in 1:nMI){
-      mi <- MarginalIndicies[Mi]
+      mi <- marginals[Mi]
       beta_mean <- 0
       total_time <- 0
       for(i in (burnin):(maxIter-1)){
         tauv <- (times[i+1] - times[i])
         total_time <- total_time + tauv
         beta_mean = beta_mean + (tauv*positions[mi,i] + thetas[mi,i]*tauv^2/2)
-        margVal[Mi,i - burnin] <- beta_mean/(times[i+1])
-        pip_Marginal[Mi] = beta_mean/total_time
+        marg_mean[Mi] = beta_mean/total_time
       }
     }
   }
-  return(list(pip_Marginal_cum = margVal, pip_Marginal=pip_Marginal))
+  return(marg_mean)
 }
-cond_marg <- function(times, positions, thetas, theta_c, MarginalIndicies = NULL, burnin = 1, eps = 1e-12){
-  ## Calc Marginal
-  nMI <- length(MarginalIndicies)
+
+#' Calculate the mean conditioned on being in a specific model
+#'
+#' @param times Vector of event times from the PDMP trajectory
+#' @param positions Matrix of positions from the PDMP trajectory, each column should correspond to a position
+#' @param thetas Matrix of PDMP velocities
+#' @param thetas_c Vector indicating the model to condition on, 1s for active variables and zeros for inactive variables
+#' @param burnin Number of events to use as burnin
+#' @return Returns the mean conditioned on being in model theta_c estimated using the PDMP trajectories.
+#' @examples
+#' generate.logistic.data <- function(beta, n.obs, Sig) {
+#' p <- length(beta)
+#' dataX <- MASS::mvrnorm(n=n.obs,mu=rep(0,p),Sigma=Sig)
+#' vals <- dataX %*% as.vector(beta)
+#' generateY <- function(p) { rbinom(1, 1, p)}
+#' dataY <- sapply(1/(1 + exp(-vals)), generateY)
+#' return(list(dataX = dataX, dataY = dataY))
+#' }
+#'
+#' n <- 15
+#' p <- 25
+#' beta <- c(1, rep(0, p-1))
+#' Siginv <- diag(1,p,p)
+#' Siginv[1,2] <- Siginv[2,1] <- 0.9
+#' set.seed(1)
+#' data <- generate.logistic.data(beta, n, solve(Siginv))
+#' ppi <- 2/p
+#'
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+#'                            ppi = ppi)
+#' b <- cond_mean(zigzag_fit$times, zigzag_fit$positions, zigzag_fit$theta, theta_c = c(1,rep(0,p-1)))
+#'
+cond_mean <- function(times, positions, thetas, theta_c, burnin = 1){
+  eps = 1e-12
+  nonZeroindicies <- which(abs(theta_c) <1e-10)
+  nZ <- length(nonZeroindicies)
   maxIter <- length(times)
-  margVal <- matrix(0, nrow = nMI, maxIter -burnin -1)
-  pip_Marginal <- rep(0, nMI)
-  if(!is.null(MarginalIndicies)){
-    for( Mi in 1:nMI){
-      mi <- MarginalIndicies[Mi]
-      beta_mean <- 0
-      total_time <- 0
-      for(i in (burnin):(maxIter-1)){
-        tauv <- (times[i+1] - times[i])
-        if(all(abs(theta_c-abs(thetas[,i])) <1e-10)){
-          total_time <- total_time + tauv
-          beta_mean = beta_mean + (tauv*positions[mi,i] + thetas[mi,i]*tauv^2/2)
-          margVal[Mi,i - burnin] <- beta_mean/(times[i+1])
-          pip_Marginal[Mi] = beta_mean/total_time
-        }
+  cond_mean <- rep(0, nZ)
+  for( Zi in 1:nZ){
+    zi <- nonZeroindicies[Zi]
+    beta_mean <- 0
+    total_time <- 0
+    for(i in (burnin):(maxIter-1)){
+      tauv <- (times[i+1] - times[i])
+      if(all(abs(theta_c-abs(thetas[,i])) <1e-10)){
+        total_time <- total_time + tauv
+        beta_mean = beta_mean + (tauv*positions[zi,i] + thetas[zi,i]*tauv^2/2)
+        cond_mean[Zi] = beta_mean/total_time
       }
     }
   }
-  return(list(pip_Marginal_cum = margVal, pip_Marginal=pip_Marginal))
-}
-post_cummean <- function(times, positions, thetas, MarginalIndicies = NULL, burnin = 1, maxIter=NULL, eps = 1e-12){
-  if(!is.null(maxIter)){
-    times <- times[burnin:maxIter] - times[burnin]
-    positions <- positions[,burnin:maxIter]
-    thetas <- thetas[,burnin:maxIter]
-  }
-  ## Calc Marginal
-  nMI <- length(MarginalIndicies)
-  maxIter <- length(times)
-  margVal <- matrix(0, nrow = nMI, maxIter -burnin -1)
-  if(!is.null(MarginalIndicies)){
-    for( Mi in 1:nMI){
-      mi <- MarginalIndicies[Mi]
-      beta_mean <- 0
-      for(i in (burnin):(maxIter-1)){
-        tauv <- (times[i+1] - times[i])
-        beta_mean = beta_mean + tauv*positions[mi,i] + thetas[mi,i]*tauv^2/2
-        margVal[Mi,i - burnin] <- beta_mean/(times[i+1])
-      }
-    }
-    #names(margVal) <- MarginalIndicies
-  }
-  return(list(pip_Marginal = margVal))
+  return(cond_mean)
 }

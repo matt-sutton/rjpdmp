@@ -4,23 +4,22 @@
 // Simulate from a + bs
 // [[Rcpp::export]]
 double linear_inv_t(double a, double b, double u) {
-  if( a < 0 & b > 0){
+  if( (a < 0) & (b > 0)){
     return(-a/b+sqrt(-2*log(u)/b));
-
-  } else if ( a > 0 & b < 0 ){
+  } else if ( (a > 0) & (b < 0) ){
     if(-pow(a,2)/b + pow(-a,2)/(2*b) >= -log(u)){
       return(-a/b -sqrt(pow(a/b,2) - 2*log(u)/b));
     } else {
       return(R_PosInf);
     }
 
-  } else if ( a >= 0 & b > 0 ){
+  } else if ( (a >= 0) & (b > 0) ){
     return(-a/b + sqrt(pow(a/b,2) - 2*log(u)/b));
 
-  } else if ( a > 0 & b == 0 ){
+  } else if ( (a > 0) & (b == 0) ){
     return(-log(u)/a);
 
-  } else if ( a <= 0 & b <= 0 ){
+  } else {
     return(R_PosInf);
   }
 }

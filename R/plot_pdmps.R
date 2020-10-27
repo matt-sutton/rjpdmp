@@ -1,6 +1,7 @@
 #' Plot PDMP dynamics and samples for posterior distributions
 #'
 #' Plot marginal densities and joint pairs plots for trajectories and samples of PDMP samplers and optionally MCMC samples for comparison.
+#' Care should be taken when interpreting marginal KDE estimates on the diagonal as the bandwidth of the KDE has an impact on how the Dirac spike is visualised.
 #' @param pdmp_res List of positions, times and velocities returned from a PDMP sampler
 #' @param coords Vector of coordinates to plot the marginal and joint distributions
 #' @param inds Vecotor of indices of the PDMP trajectories to plot.

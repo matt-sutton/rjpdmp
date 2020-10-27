@@ -91,7 +91,7 @@ List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay
     x.elem(inds_off_hp)/prior_sigma2;
 
   a_vals.elem(inds_off_hp) = theta.elem(inds_off_hp)%grad_vals.elem(inds_off_hp);
-  for( int i =0; i< inds_off_hp.size(); i++){
+  for(unsigned int i =0; i< inds_off_hp.size(); i++){
     b_vals(inds_off_hp(i)) = sum(arma::abs(theta(inds_off_hp(i))*dataX.col(inds_off_hp(i))%(Xtheta))) +
       theta(inds_off_hp(i))*theta(inds_off_hp(i))/prior_sigma2;
   }
@@ -135,7 +135,7 @@ List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay
       }
       inds_off_hp = arma::find(arma::abs(theta) > eps);
       inds_on_hp = arma::find(arma::abs(theta) < eps);
-      for( int i =0; i< inds_off_hp.size(); i++){
+      for(unsigned int i =0; i< inds_off_hp.size(); i++){
         b_vals(inds_off_hp(i)) = sum(arma::abs(theta(inds_off_hp(i))*dataX.col(inds_off_hp(i))%(Xtheta))) +
           theta(inds_off_hp(i))*theta(inds_off_hp(i))/prior_sigma2;
       }
@@ -163,7 +163,7 @@ List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay
         }
         nEvent++;
         val = -val;
-        for( int i =0; i< inds_off_hp.size(); i++){
+        for(unsigned int i =0; i< inds_off_hp.size(); i++){
           b_vals(inds_off_hp(i)) = sum(arma::abs(theta(inds_off_hp(i))*dataX.col(inds_off_hp(i))%(Xtheta))) +
             theta(inds_off_hp(i))*theta(inds_off_hp(i))/prior_sigma2;
         }
@@ -303,7 +303,7 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
     dataXi = dataX.row(i);
     X_cv_2(i) = sqrt(sum(dataXi(inds_off_hp_cv)%dataXi(inds_off_hp_cv)));
   }
-  for( int i =0; i< inds_off_hp_cv.size(); i++){
+  for(unsigned int i =0; i< inds_off_hp_cv.size(); i++){
     C_cv(inds_off_hp_cv(i)) = n_obs*0.25*arma::max(arma::abs(dataX.col(inds_off_hp_cv(i)))%X_cv_2);
   }
 

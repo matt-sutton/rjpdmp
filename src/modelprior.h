@@ -69,11 +69,9 @@ arma::vec bps_MP_GaussIID_S(arma::vec theta, double rjval, double ppi, double pr
 
   int num_off = inds_off.size();
   int num_on = theta.size() - num_off;
-  bool all_on_hp = true;
   double Jac = 1.0;
 
   if( num_off > 1e-10 ){
-    all_on_hp = false;
     Jac = area_s(theta.size() - num_on -1)/area_s(theta.size() - num_on);
     Jac = Jac*2/(theta.size() - num_on);
   }
@@ -94,11 +92,9 @@ arma::vec bps_MP_GaussIID_N(arma::vec theta,double rjval, double ppi, double pri
 
   int num_off = inds_off.size();
   int num_on = theta.size() - num_off;
-  bool all_on_hp = true;
   double Jac = 1.0;
 
   if( num_off > 1e-10 ){
-    all_on_hp = false;
     Jac = 2.0/sqrt(2.0*arma::datum::pi);
   }
 
@@ -106,7 +102,6 @@ arma::vec bps_MP_GaussIID_N(arma::vec theta,double rjval, double ppi, double pri
   double alpha;
   for(int i=0; i < num_on; i++){
     alpha = -0.5*log(2*arma::datum::pi*prior_sigma2);
-    // Rcout << alpha;
     alpha += log(rjval) + log(ppi)-log(1-ppi) + log(Jac);
     times(i) = R::rexp(1)/exp(alpha);
   }

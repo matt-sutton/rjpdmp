@@ -55,7 +55,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                  double prior_sigma2,arma::vec x0, arma::vec theta0, double ref = 0.1,
                  double rj_val = 0.5, double ppi=0.5, int nmax = 10^6, int burn = -1){
   int p = x0.size(), nEvent= 1;
-  double eps = 1e-10, epsbig = 0.5, t = 0, upper, val, tau_val, alpha;
+  double eps = 1e-10, epsbig = 0.5, t = 0, upper, tau_val, alpha;
 
   arma::mat sk_points(p,nmax), sk_theta(p,nmax);
   arma::vec sk_times(nmax), theta = theta0, taus(p+2), x = x0, en_variables(p), ab_vals(2);
@@ -289,7 +289,7 @@ List bps_n_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                  double ppi=0.5, int nmax = 10^6, int burn = -1){
 
   int p = x0.size(), nEvent= 1;
-  double eps = 1e-10, epsbig = 0.5, t = 0, upper, val, tau_val, alpha;
+  double eps = 1e-10, epsbig = 0.5, t = 0, upper, tau_val, alpha;
 
   // Later functionality will take these as arguments
   double m = 0.5, sigma2_small = 1, sigma2_large = 10^2;

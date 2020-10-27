@@ -9,5 +9,5 @@ License: GPL (>= 2)
 RoxygenNote: 7.1.0
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.3)
+Imports: data.table, Rcpp (>= 0.12.3)
 LinkingTo: Rcpp, RcppArmadillo

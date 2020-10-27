@@ -31,6 +31,7 @@ Generates a plot of the marginal density on the diagonal and pairs plots of the 
 }
 \description{
 Plot marginal densities and joint pairs plots for trajectories and samples of PDMP samplers and optionally MCMC samples for comparison.
+Care should be taken when interpreting marginal KDE estimates on the diagonal as the bandwidth of the KDE has an impact on how the Dirac spike is visualised.
 }
 \examples{
 generate.logistic.data <- function(beta, n.obs, Sig) {

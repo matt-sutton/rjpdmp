@@ -1,5 +1,4 @@
 #include <RcppArmadillo.h>
-#include "rcpp_pgdraw.h"
 #include <R_ext/Utils.h>
 #include <iostream>
 #include <exception>
@@ -30,7 +29,7 @@ arma::vec rpg(arma::vec shape, arma::vec scale) {
   return result;
 }
 
-double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
+double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
   double s = sum(gamma);
   if( s < 1 ){
     return(0);
@@ -93,7 +92,7 @@ double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, 
 //'
 //' @export
 // [[Rcpp::export]]
-List gibbs_logit(arma::mat dataX, arma::vec datay, arma::vec beta, arma::vec gamma,
+List gibbs_logit(const arma::mat& dataX, arma::vec datay, arma::vec beta, arma::vec gamma,
                  double ppi = 0.5, int nsamples = 10^5, double maxTime = 10^8, double prior_sigma2 = 10.0){
   arma::wall_clock timer;
   timer.tic();
