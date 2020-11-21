@@ -5,7 +5,8 @@
 #' @param positions Matrix of positions from the PDMP trajectory, each column should correspond to a position
 #' @param times Vector of event times from the PDMP trajectory
 #' @param nsample Number of desired samples from the PDMP trajectory
-#' @param theta Optional Matrix of velocities from the PDMP trjectory, each column should correspond to a velocity
+#' @param theta Optional Matrix of velocities from the PDMP trajectory, each column should correspond to a velocity
+#' @param burn Index to start the discretisation from. Default is 1.
 #' @return Returns a list with the following objects:
 #' @return \code{x}: Matrix of extracted samples of the position (x) taken using a fixed time discretisation of the PDMP
 #' @return \code{theta}: Matrix of extracted samples of the velocity (theta) taken using a fixed time discretisation of the PDMP

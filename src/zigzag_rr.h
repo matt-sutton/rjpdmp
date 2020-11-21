@@ -25,8 +25,8 @@
 //' @return \code{theta}: Matrix of new velocities at event times.
 //' @examples
 //'
-//' generate.rr.data <- function(beta, n, Sig, noise, interc = T) {
-//' p <- length(beta)-(interc == T)
+//' generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
+//' p <- length(beta)-(interc == TRUE)
 //' dataX <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sig)
 //' if(interc) {dataX <- cbind(1, dataX)}
 //' dataY <- rep(0, n)
@@ -37,7 +37,7 @@
 //' n<- 120
 //' beta <- c(0.5,0.5, rep(0,p-1))
 //' set.seed(1)
-//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = F)
+//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 //' dataX <- data$dataX; dataY <- data$dataY
 //'
 //' set.seed(1)
@@ -45,7 +45,7 @@
 //' res <- zigzag_rr(maxTime = 5, dataX = dataX, datay = dataY,
 //'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 //'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
-//' plot_pdmp(res, margins = 1:3, inds = 1:10^4)
+//' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
 //'
 //' @export
 // [[Rcpp::export]]
@@ -145,9 +145,6 @@ List zigzag_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
         x(mini)/prior_sigma2;
 
       val = theta(mini)*grad_val;
-      if(val > upper+1e-10){
-        Rcout << "\n acutal:" << val << " upper:" << upper;
-      }
       if( R::runif(0,1) < val/upper){
         Xtheta -= 2*dataX.col(mini)*theta(mini);
         theta[mini] = -theta[mini];
@@ -167,7 +164,7 @@ List zigzag_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
     }
     if(timer.toc() > maxTime){
       if(nEvent < burn){
-        Rcout << "Sampler still in burnin phase - set a longer runtime";
+        Rcout << "Sampler still in burnin phase - set a longer runtime" << std::endl;
       } else {
         sk_points.shed_cols(nEvent-burn, nmax-1);
         sk_theta.shed_cols(nEvent-burn, nmax-1);

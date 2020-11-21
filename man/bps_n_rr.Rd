@@ -56,8 +56,8 @@ Included variables are given an independent Gaussian prior with variance \code{p
 }
 \examples{
 
-generate.rr.data <- function(beta, n, Sig, noise, interc = T) {
-p <- length(beta)-(interc == T)
+generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
+p <- length(beta)-(interc == TRUE)
 dataX <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sig)
 if(interc) {dataX <- cbind(1, dataX)}
 dataY <- rep(0, n)
@@ -68,7 +68,7 @@ p <- 3;
 n<- 120
 beta <- c(0.5,0.5, rep(0,p-1))
 set.seed(1)
-data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = F)
+data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 dataX <- data$dataX; dataY <- data$dataY
 
 set.seed(1)

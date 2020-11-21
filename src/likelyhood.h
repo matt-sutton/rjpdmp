@@ -2,15 +2,13 @@
 #define LIKELYHOOD_H
 
 // LOGISTIC //
-// Log likelihood (for finding control variate) //
-// [[Rcpp::export]]
+// Log likelihood (useful for finding control variate) //
 double log_logit(arma::mat X, arma::vec y, arma::vec x){
   arma::vec z = X*x;
   return(  sum( log(1+exp(z)) - y%z)) ;
 }
 
 // Gradient of the Logistic Regression likelihood //
-// [[Rcpp::export]]
 arma::vec get_grad_logit(const arma::mat& X, arma::vec z,const arma::vec& y, arma::uvec partials){
   int grad_size = partials.size();
   arma::vec grad(grad_size);
@@ -51,7 +49,6 @@ arma::vec log_add_exp(arma::vec a, arma::vec b){
 }
 
 // Gradient of residual from likelihood g'(e(t))//
-// [[Rcpp::export]]
 arma::vec get_grad_resid_rr(arma::vec resid, double m, double sig12, double sig22){
 
   double sig16 = std::pow(sig12, 3); double sig26 = std::pow(sig22, 3);

@@ -1,19 +1,19 @@
 #ifndef MODELPRIOR_H
 #define MODELPRIOR_H
 
+// Calculate area of hyper sphere
 double area_s(double d){
   return(2*std::pow(arma::datum::pi,0.5*d+0.5)/tgamma(0.5*d+0.5));
 }
-
-// [[Rcpp::export]]
+// Simulate alpha for BPS_S kernel exiting hyper plane (use inversion)
 double sim_alpha(double s){
   double sgn = 2.0*(R::runif(0,1) < 0.5) - 1;
   return(sqrt(1 - std::pow(R::runif(0,1),2/s))*sgn);
 }
+// Simulate alpha for BPS_S kernel exiting hyper plane (use Metropolis Hastings)
 double q_density_S(double alpha, double s){
   return(0.5*std::abs(alpha)*s*std::pow(1-alpha*alpha, 0.5*(s-2)));
 }
-// [[Rcpp::export]]
 double MH_alpha_S(double s){
   double alpha_c = R::runif(-1,1);
   double q_c = q_density_S(alpha_c,s);
@@ -28,11 +28,10 @@ double MH_alpha_S(double s){
   }
   return(alpha_c);
 }
+// Simulate alpha for BPS_N kernel exiting hyper plane (use Metropolis Hastings)
 double q_density(double alpha){
   return(2*std::abs(alpha)*exp(-0.5*alpha*alpha));
 }
-
-// [[Rcpp::export]]
 double MH_alpha_N(double s){
   double alpha_c = 2*(2.0*(R::runif(0,1) < 0.5) - 1);
   double q_c = q_density(alpha_c);

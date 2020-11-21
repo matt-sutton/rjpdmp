@@ -2,7 +2,6 @@
 #define INVERSION_H
 
 // Simulate from a + bs
-// [[Rcpp::export]]
 double linear_inv_t(double a, double b, double u) {
   if( (a < 0) & (b > 0)){
     return(-a/b+sqrt(-2*log(u)/b));
@@ -24,7 +23,6 @@ double linear_inv_t(double a, double b, double u) {
   }
 }
 
-// [[Rcpp::export]]
 double get_time_off_hp_ind(double x, double theta,
                           double a, double b) {
   double hit_time = R_PosInf;
@@ -34,7 +32,6 @@ double get_time_off_hp_ind(double x, double theta,
   return(std::min(hit_time,linear_inv_t(a,b,R::runif(0,1))));
 }
 
-// [[Rcpp::export]]
 arma::vec get_time_off_hp(arma::vec x, arma::vec theta,
                           arma::vec a, arma::vec b) {
   int p = x.size();
@@ -50,7 +47,6 @@ arma::vec get_time_off_hp(arma::vec x, arma::vec theta,
   return(times);
 }
 
-// [[Rcpp::export]]
 arma::vec get_hit_times(arma::vec x, arma::vec theta) {
   int p = x.size();
   arma::vec hit_times = R_PosInf*arma::ones(p,1);

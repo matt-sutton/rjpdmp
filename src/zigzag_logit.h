@@ -150,9 +150,6 @@ List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay
       grad_val = get_grad_logit(dataX, z, datay, miniu) + x(mini)/prior_sigma2;
 
       val = theta(mini)*grad_val(0);
-      if(val > upper+1e-10){
-        Rcout << "\n acutal:" << val << " upper:" << upper;
-      }
       if( R::runif(0,1) < val/upper){
         Xtheta -= 2*dataX.col(mini)*theta(mini);
         theta(mini) = -theta(mini);
@@ -172,7 +169,7 @@ List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay
     }
     if(timer.toc() > maxTime){
       if(nEvent < burn){
-        Rcout << "Sampler still in burnin phase - set a longer runtime";
+        Rcout << "Sampler still in burnin phase - set a longer runtime" << std::endl;
       } else {
         sk_points.shed_cols(nEvent-burn, nmax-1);
         sk_theta.shed_cols(nEvent-burn, nmax-1);
@@ -242,20 +239,24 @@ bool check_cv(arma::uvec inds_off_hp_cv, arma::uvec inds_off_hp){
 //' data <- generate.logistic.data(beta, n, solve(Siginv))
 //' ppi <- 2/p
 //'
-//' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
-//'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+//' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX,
+//'                            datay = data$dataY, prior_sigma2 = 10,
+//'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 //'                            ppi = ppi)
 //'
-//' zigzag_fit_s <- zigzag_logit_ss(maxTime = 5, dataX = data$dataX, datay = data$dataY,
-//'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p),
-//'                            rj_val = 0.6, cvref = c(1,rep(0,p-1)), ppi = ppi)
+//' zigzag_fit_s <- zigzag_logit_ss(maxTime = 5, dataX = data$dataX,
+//'                                 datay = data$dataY,prior_sigma2 = 10,
+//'                                 theta0 = rep(0, p), x0 = rep(0, p),
+//'                                 rj_val = 0.6, cvref = c(1,rep(0,p-1)),
+//'                                 ppi = ppi)
 //'
-//' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
-//'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
+//' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+//'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, inds = 1:length(zigzag_fit_s$times),burn = .1,
-//'                     nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, burn = .1,
+//'                    inds = 1:length(zigzag_fit_s$times), nsamples = 5*1e4,
+//'                    mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]
@@ -374,9 +375,6 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
         x(mini)/prior_sigma2;
 
       val = theta(mini)*grad_val(0);
-      if(val > upper+1e-10){
-        Rcout << "\n acutal:" << val << " upper:" << upper;
-      }
       if( R::runif(0,1) < val/upper){
         theta(mini) = -theta(mini);
         if( nEvent >= burn){
@@ -399,7 +397,7 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
     }
     if(timer.toc() > maxTime){
       if(nEvent < burn){
-        Rcout << "Sampler still in burnin phase - set a longer runtime";
+        Rcout << "Sampler still in burnin phase - set a longer runtime" << std::endl;
       } else {
         sk_points.shed_cols(nEvent-burn, nmax-1);
         sk_theta.shed_cols(nEvent-burn, nmax-1);

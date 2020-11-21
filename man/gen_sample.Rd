@@ -13,7 +13,9 @@ gen_sample(positions, times, nsample, theta = NULL, burn = 1)
 
 \item{nsample}{Number of desired samples from the PDMP trajectory}
 
-\item{theta}{Optional Matrix of velocities from the PDMP trjectory, each column should correspond to a velocity}
+\item{theta}{Optional Matrix of velocities from the PDMP trajectory, each column should correspond to a velocity}
+
+\item{burn}{Index to start the discretisation from. Default is 1.}
 }
 \value{
 Returns a list with the following objects:

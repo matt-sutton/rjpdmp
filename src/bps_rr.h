@@ -19,15 +19,15 @@
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
 //' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
-//' @param burn Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.
+//' @param burn Optional number of iterations to use for burn-in. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
-//' @return \code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
+//' @return \code{times}: Vector of event times where ZigZag process switches velocity or jumps models.
 //' @return \code{positions}: Matrix of positions at which event times occur, these are not samples from the PDMP.
 //' @return \code{theta}: Matrix of new velocities at event times.
 //' @examples
 //'
-//' generate.rr.data <- function(beta, n, Sig, noise, interc = T) {
-//' p <- length(beta)-(interc == T)
+//' generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
+//' p <- length(beta)-(interc == TRUE)
 //' dataX <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sig)
 //' if(interc) {dataX <- cbind(1, dataX)}
 //' dataY <- rep(0, n)
@@ -38,7 +38,7 @@
 //' n<- 120
 //' beta <- c(0.5,0.5, rep(0,p-1))
 //' set.seed(1)
-//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = F)
+//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 //' dataX <- data$dataX; dataY <- data$dataY
 //'
 //' set.seed(1)
@@ -137,11 +137,6 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
         dataX.cols(inds_off_hp).t()*get_grad_resid_rr(resid, m, sigma2_large, sigma2_small) +
         x.elem(inds_off_hp)/prior_sigma2;
 
-      if(arma::dot(grad_vals,theta) > upper+1e-10){
-        Rcout << "\n acutal:" << arma::dot(grad_vals,theta);
-        Rcout << " upper:" << upper;
-      }
-
       if( R::runif(0,1) < arma::dot(grad_vals,theta)/upper){
 
         theta.elem(inds_off_hp) -=
@@ -211,7 +206,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 
     if(timer.toc() > maxTime){
       if(nEvent < burn){
-        Rcout << "Sampler still in burnin phase - set a longer runtime";
+        Rcout << "Sampler still in burnin phase - set a longer runtime" << std::endl;
       } else {
         sk_points.shed_cols(nEvent-burn, nmax-1);
         sk_theta.shed_cols(nEvent-burn, nmax-1);
@@ -259,8 +254,8 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //' @return \code{theta}: Matrix of new velocities at event times.
 //' @examples
 //'
-//' generate.rr.data <- function(beta, n, Sig, noise, interc = T) {
-//' p <- length(beta)-(interc == T)
+//' generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
+//' p <- length(beta)-(interc == TRUE)
 //' dataX <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sig)
 //' if(interc) {dataX <- cbind(1, dataX)}
 //' dataY <- rep(0, n)
@@ -271,7 +266,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //' n<- 120
 //' beta <- c(0.5,0.5, rep(0,p-1))
 //' set.seed(1)
-//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = F)
+//' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 //' dataX <- data$dataX; dataY <- data$dataY
 //'
 //' set.seed(1)
@@ -364,11 +359,6 @@ List bps_n_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
         dataX.cols(inds_off_hp).t()*get_grad_resid_rr(resid, m, sigma2_large, sigma2_small) +
         x.elem(inds_off_hp)/prior_sigma2;
 
-      if(arma::dot(grad_vals,theta) > upper+1e-10){
-        Rcout << "\n acutal:" << arma::dot(grad_vals,theta);
-        Rcout << " upper:" << upper;
-      }
-
       if( R::runif(0,1) < arma::dot(grad_vals,theta)/upper){
 
         theta.elem(inds_off_hp) -=
@@ -432,7 +422,7 @@ List bps_n_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 
     if(timer.toc() > maxTime){
       if(nEvent < burn){
-        Rcout << "Sampler still in burnin phase - set a longer runtime";
+        Rcout << "Sampler still in burnin phase - set a longer runtime" << std::endl;
       } else {
         sk_points.shed_cols(nEvent-burn, nmax-1);
         sk_theta.shed_cols(nEvent-burn, nmax-1);

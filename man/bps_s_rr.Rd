@@ -39,12 +39,12 @@ bps_s_rr(
 
 \item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.}
 
-\item{burn}{Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.}
+\item{burn}{Optional number of iterations to use for burn-in. These are not stored so can be useful in memory intensive problems.}
 }
 \value{
 Returns a list with the following objects:
 
-\code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
+\code{times}: Vector of event times where ZigZag process switches velocity or jumps models.
 
 \code{positions}: Matrix of positions at which event times occur, these are not samples from the PDMP.
 
@@ -56,8 +56,8 @@ Included variables are given an independent Gaussian prior with variance \code{p
 }
 \examples{
 
-generate.rr.data <- function(beta, n, Sig, noise, interc = T) {
-p <- length(beta)-(interc == T)
+generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
+p <- length(beta)-(interc == TRUE)
 dataX <- MASS::mvrnorm(n=n,mu=rep(0,p),Sigma=Sig)
 if(interc) {dataX <- cbind(1, dataX)}
 dataY <- rep(0, n)
@@ -68,7 +68,7 @@ p <- 3;
 n<- 120
 beta <- c(0.5,0.5, rep(0,p-1))
 set.seed(1)
-data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = F)
+data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 dataX <- data$dataX; dataY <- data$dataY
 
 set.seed(1)

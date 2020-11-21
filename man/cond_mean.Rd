@@ -13,9 +13,9 @@ cond_mean(times, positions, thetas, theta_c, burnin = 1)
 
 \item{thetas}{Matrix of PDMP velocities}
 
-\item{burnin}{Number of events to use as burnin}
+\item{theta_c}{Vector indicating the model to condition on, 1s for active variables and zeros for inactive variables}
 
-\item{thetas_c}{Vector indicating the model to condition on, 1s for active variables and zeros for inactive variables}
+\item{burnin}{Number of events to use as burnin}
 }
 \value{
 Returns the mean conditioned on being in model theta_c estimated using the PDMP trajectories.

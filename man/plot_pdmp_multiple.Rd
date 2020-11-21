@@ -14,17 +14,17 @@ plot_pdmp_multiple(
 )
 }
 \arguments{
+\item{list_pdmp}{List of PDMP sampler trajectories to plot}
+
 \item{coords}{Vector of coordinates to plot the marginal and joint distributions}
 
-\item{inds}{Vecotor of indices of the PDMP trajectories to plot.}
+\item{inds}{Vector of indices of the PDMP trajectories to plot.}
 
-\item{burn}{Percentage of events to use as burnin. Should be between 0 and 1.}
+\item{nsamples}{Number of samples to generate and use for marginal density estimates of the PDMP methods}
+
+\item{burn}{Percentage of events to use as burn-in. Should be between 0 and 1, default 0.1.}
 
 \item{mcmc_samples}{Optional Matrix of samples from an MCMC method. Each row should be a sample.}
-
-\item{pdmp_res}{List of PDMP sampler trajectories to plot}
-
-\item{namples}{Number of samples to generate and use for marginal density estimates of the PDMP methods}
 }
 \value{
 Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories
@@ -51,14 +51,15 @@ set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
 
-zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
-                           prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,datay =data$dataY,
+                           prior_sigma2 = 10,theta0 = rep(0, p),
+                           x0 = rep(0, p), rj_val = 0.6,
                            ppi = ppi)
 bps_fit <- bps_n_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                        prior_sigma2 = 10, theta0 = rep(0, p), x0 = rep(0, p),
                        ref = 0.1, rj_val = 0.6,ppi = ppi)
 
-plot_pdmp_multiple(list(zigzag_fit,bps_fit), coords = 1:2, inds = 1:10^3,burn = .1,
-                      nsamples = 1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+plot_pdmp_multiple(list(zigzag_fit,bps_fit), coords = 1:2, inds = 1:10^3,
+                      nsamples = 1e4, burn = .1)
 
 }

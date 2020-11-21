@@ -29,7 +29,7 @@ arma::vec rpg(arma::vec shape, arma::vec scale) {
   return result;
 }
 
-double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
+double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, arma::vec kappa, double prior_sigma2){
   double s = sum(gamma);
   if( s < 1 ){
     return(0);
@@ -80,19 +80,21 @@ double g_fun(const arma::mat& dataX, arma::vec beta, arma::vec gamma, arma::vec 
 //' data <- generate.logistic.data(beta, n, solve(Siginv))
 //' ppi <- 2/p
 //'
-//' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
-//'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
+//' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX,
+//'                            datay = data$dataY, prior_sigma2 = 10,
+//'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 //'                            ppi = ppi)
 //'
-//' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
-//'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
+//' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+//'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1,
+//'           nsamples = 5*1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]
-List gibbs_logit(const arma::mat& dataX, arma::vec datay, arma::vec beta, arma::vec gamma,
+List gibbs_logit(arma::mat dataX, arma::vec datay, arma::vec beta, arma::vec gamma,
                  double ppi = 0.5, int nsamples = 10^5, double maxTime = 10^8, double prior_sigma2 = 10.0){
   arma::wall_clock timer;
   timer.tic();

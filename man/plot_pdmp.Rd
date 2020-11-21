@@ -18,13 +18,13 @@ plot_pdmp(
 
 \item{coords}{Vector of coordinates to plot the marginal and joint distributions}
 
-\item{inds}{Vecotor of indices of the PDMP trajectories to plot.}
+\item{inds}{Vector of indices of the PDMP trajectories to plot.}
 
-\item{burn}{Percentage of events to use as burnin. Should be between 0 and 1.}
+\item{nsamples}{Number of samples to generate and use for marginal density estimates of the PDMP methods}
+
+\item{burn}{Percentage of events to use as burn-in. Should be between 0 and 1.}
 
 \item{mcmc_samples}{Optional Matrix of samples from an MCMC method. Each row should be a sample.}
-
-\item{namples}{Number of samples to generate and use for marginal density estimates of the PDMP methods}
 }
 \value{
 Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories

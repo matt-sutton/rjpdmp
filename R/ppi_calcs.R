@@ -35,8 +35,9 @@
 #' a <- models_visited(zigzag_fit$theta)
 #'
 #' # Work out probability of top 10 most visited models and all marginal inclusion probabilities
-#' # specific model probabilites become trivially small for large dimensions
-#' b <- model_probabilities(zigzag_fit$times, zigzag_fit$positions, models = a[1:10,1:p], marginals=1:p)
+#' # specific model probabilities become trivially small for large dimensions
+#' b <- model_probabilities(zigzag_fit$times, zigzag_fit$positions,
+#'                          models = a[1:10,1:p], marginals=1:p)
 #'
 #'
 model_probabilities <- function(times, positions, models = NULL, marginals = NULL, burnin = 1){
@@ -178,7 +179,7 @@ marginal_mean <- function(times, positions, thetas, marginals = NULL, burnin = 1
 #' @param times Vector of event times from the PDMP trajectory
 #' @param positions Matrix of positions from the PDMP trajectory, each column should correspond to a position
 #' @param thetas Matrix of PDMP velocities
-#' @param thetas_c Vector indicating the model to condition on, 1s for active variables and zeros for inactive variables
+#' @param theta_c Vector indicating the model to condition on, 1s for active variables and zeros for inactive variables
 #' @param burnin Number of events to use as burnin
 #' @return Returns the mean conditioned on being in model theta_c estimated using the PDMP trajectories.
 #' @examples
