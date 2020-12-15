@@ -107,11 +107,12 @@ model_probabilities <- function(times, positions, models = NULL, marginals = NUL
 #' ppi <- 2/p
 #'
 #' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
-#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
-#'                            ppi = ppi)
+#'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p),
+#'                            rj_val = 0.6, ppi = ppi)
 #' models_visited(zigzag_fit$theta)
 #'
 models_visited <- function(thetas){
+  . <- NULL # necessity for data.table package dependency
   df <- data.table::data.table(t(abs(thetas)) > 1e-10)
   df <- as.matrix(df[,.(COUNT = .N), by = names(df)])
   df <- df[order(df[,NCOL(df)], decreasing = T),]

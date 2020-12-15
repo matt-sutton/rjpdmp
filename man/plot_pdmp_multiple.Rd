@@ -10,7 +10,8 @@ plot_pdmp_multiple(
   inds = 1:10^3,
   nsamples = 10^3,
   burn = 0.1,
-  mcmc_samples = NULL
+  mcmc_samples = NULL,
+  pch = 19
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ plot_pdmp_multiple(
 \item{burn}{Percentage of events to use as burn-in. Should be between 0 and 1, default 0.1.}
 
 \item{mcmc_samples}{Optional Matrix of samples from an MCMC method. Each row should be a sample.}
+
+\item{pch}{The graphics parameter for off diagonal plots. Default is 20.}
 }
 \value{
 Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories

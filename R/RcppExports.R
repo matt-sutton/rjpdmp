@@ -41,16 +41,16 @@
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' bps_fit <- bps_n_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' bps_fit <- bps_n_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                           prior_sigma2 = 10, theta0 = rep(0, p),
 #'                           x0 = rep(0, p), ref = 0.1, rj_val = 0.6,
 #'                           ppi = ppi)
 #'
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 #'                          ppi = ppi)
 #'
-#' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+#' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
 #'           mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
 #' @export
@@ -98,16 +98,16 @@ bps_n_logit <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' bps_fit <- bps_s_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' bps_fit <- bps_s_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                        prior_sigma2 = 10, theta0 = rep(0, p),
 #'                        x0 = rep(0, p), ref = 0.1, rj_val = 0.6,
 #'                        ppi = ppi)
 #'
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 #'                          ppi = ppi)
 #'
-#' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+#' plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 1e4,
 #'           mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
 #' @export
@@ -154,11 +154,11 @@ bps_s_logit <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0
 #'
 #' set.seed(1)
 #' ppi_val <- 1/4
-#' res <- bps_s_rr(maxTime = 5, dataX = dataX, datay = dataY,
+#' res <- bps_s_rr(maxTime = 1, dataX = dataX, datay = dataY,
 #'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 #'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
 #'
-#' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
+#' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
 #'
 #' @export
 bps_s_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0.1, rj_val = 0.5, ppi = 0.5, nmax = 10^6L, burn = -1L) {
@@ -204,11 +204,11 @@ bps_s_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0.1,
 #'
 #' set.seed(1)
 #' ppi_val <- 1/4
-#' res <- bps_n_rr(maxTime = 5, dataX = dataX, datay = dataY,
+#' res <- bps_n_rr(maxTime = 1, dataX = dataX, datay = dataY,
 #'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 #'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
 #'
-#' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
+#' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
 #'
 #' @export
 bps_n_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0.1, rj_val = 0.5, ppi = 0.5, nmax = 10^6L, burn = -1L) {
@@ -219,7 +219,7 @@ bps_n_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0.1,
 #'
 #' Applies the Collapsed Gibbs Sampler to a Logistic regression with dirac spike and slab distribution, as detailed in Reversible Jump PDMP Samplers for Variable Selection, 2020.
 #' For included variables an independent Gaussian prior is assumed with variance \code{prior_sigma2} and mean zero, variables are given prior probabilities of inclusion \code{ppi}.
-#' Code makes use of the package set-up for Polya-Gamma availables here \code{https://github.com/jgscott/helloPG}.
+#' Code makes use of the package set-up for Polya-Gamma simulation available at \code{https://github.com/jgscott/helloPG}.
 #'
 #' @param maxTime Maximum runtime (in Seconds) of the algorithm; will terminate the code after a given computation time or nmax iterations of the algorithm is reached.
 #' @param dataX Matrix of all covariates where the i-th row corresponds to all p covariates x_{i,1}, ..., x_{i,p} of the i-th observation.
@@ -253,17 +253,17 @@ bps_n_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, ref = 0.1,
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX,
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
 #'                            datay = data$dataY, prior_sigma2 = 10,
 #'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
 #'
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 #'                          ppi = ppi)
 #'
-#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1,
-#'           nsamples = 5*1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
+#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1,
+#'           nsamples = 1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
 #' @export
 gibbs_logit <- function(dataX, datay, beta, gamma, ppi = 0.5, nsamples = 10^5L, maxTime = 10^8, prior_sigma2 = 10.0) {
@@ -309,15 +309,15 @@ gibbs_logit <- function(dataX, datay, beta, gamma, ppi = 0.5, nsamples = 10^5L, 
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
 #'
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 #'                          ppi = ppi)
 #'
-#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
 #'            mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
 #' @export
@@ -365,23 +365,23 @@ zigzag_logit <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, rj_val
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX,
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
 #'                            datay = data$dataY, prior_sigma2 = 10,
 #'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
 #'
-#' zigzag_fit_s <- zigzag_logit_ss(maxTime = 5, dataX = data$dataX,
+#' zigzag_fit_s <- zigzag_logit_ss(maxTime = 1, dataX = data$dataX,
 #'                                 datay = data$dataY,prior_sigma2 = 10,
 #'                                 theta0 = rep(0, p), x0 = rep(0, p),
 #'                                 rj_val = 0.6, cvref = c(1,rep(0,p-1)),
 #'                                 ppi = ppi)
 #'
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 #'                          ppi = ppi)
 #'
 #' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, burn = .1,
-#'                    inds = 1:length(zigzag_fit_s$times), nsamples = 5*1e4,
+#'                    inds = 1:10^2, nsamples = 1e4,
 #'                    mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
 #' @export
@@ -427,10 +427,10 @@ zigzag_logit_ss <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, cvr
 #'
 #' set.seed(1)
 #' ppi_val <- 1/4
-#' res <- zigzag_rr(maxTime = 5, dataX = dataX, datay = dataY,
+#' res <- zigzag_rr(maxTime = 1, dataX = dataX, datay = dataY,
 #'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 #'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
-#' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
+#' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
 #'
 #' @export
 zigzag_rr <- function(maxTime, dataX, datay, prior_sigma2, x0, theta0, rj_val = 0.5, ppi = 0.5, nmax = 10^6L, burn = -1L) {

@@ -74,16 +74,16 @@ set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
 
-bps_fit <- bps_n_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+bps_fit <- bps_n_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                           prior_sigma2 = 10, theta0 = rep(0, p),
                           x0 = rep(0, p), ref = 0.1, rj_val = 0.6,
                           ppi = ppi)
 
-gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
                          ppi = ppi)
 
-plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4,
+plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
           mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 
 }

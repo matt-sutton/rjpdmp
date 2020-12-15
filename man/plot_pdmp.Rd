@@ -10,7 +10,8 @@ plot_pdmp(
   inds = 1:10^3,
   nsamples = 10^3,
   burn = 0.1,
-  mcmc_samples = NULL
+  mcmc_samples = NULL,
+  pch = 20
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ plot_pdmp(
 \item{burn}{Percentage of events to use as burn-in. Should be between 0 and 1.}
 
 \item{mcmc_samples}{Optional Matrix of samples from an MCMC method. Each row should be a sample.}
+
+\item{pch}{The graphics parameter for off diagonal plots. Default is 20.}
 }
 \value{
 Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories
@@ -52,14 +55,14 @@ set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
 
-zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
                            ppi = ppi)
-gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
                          ppi = ppi)
 
-plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1,
+plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1,
           nsamples = 1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 
 }

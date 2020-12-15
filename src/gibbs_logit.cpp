@@ -46,7 +46,7 @@ double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, 
 //'
 //' Applies the Collapsed Gibbs Sampler to a Logistic regression with dirac spike and slab distribution, as detailed in Reversible Jump PDMP Samplers for Variable Selection, 2020.
 //' For included variables an independent Gaussian prior is assumed with variance \code{prior_sigma2} and mean zero, variables are given prior probabilities of inclusion \code{ppi}.
-//' Code makes use of the package set-up for Polya-Gamma availables here \code{https://github.com/jgscott/helloPG}.
+//' Code makes use of the package set-up for Polya-Gamma simulation available at \code{https://github.com/jgscott/helloPG}.
 //'
 //' @param maxTime Maximum runtime (in Seconds) of the algorithm; will terminate the code after a given computation time or nmax iterations of the algorithm is reached.
 //' @param dataX Matrix of all covariates where the i-th row corresponds to all p covariates x_{i,1}, ..., x_{i,p} of the i-th observation.
@@ -80,17 +80,17 @@ double g_fun(arma::mat dataX, arma::vec beta, arma::vec gamma, arma::vec omega, 
 //' data <- generate.logistic.data(beta, n, solve(Siginv))
 //' ppi <- 2/p
 //'
-//' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX,
+//' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
 //'                            datay = data$dataY, prior_sigma2 = 10,
 //'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 //'                            ppi = ppi)
 //'
-//' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay =data$dataY,
+//' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
 //'                          ppi = ppi)
 //'
-//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1,
-//'           nsamples = 5*1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
+//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1,
+//'           nsamples = 1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
 //'
 //' @export
 // [[Rcpp::export]]

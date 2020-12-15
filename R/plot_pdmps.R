@@ -8,6 +8,7 @@
 #' @param nsamples Number of samples to generate and use for marginal density estimates of the PDMP methods
 #' @param burn Percentage of events to use as burn-in. Should be between 0 and 1.
 #' @param mcmc_samples Optional Matrix of samples from an MCMC method. Each row should be a sample.
+#' @param pch The graphics parameter for off diagonal plots. Default is 20.
 #' @return Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories
 #' @examples
 #' generate.logistic.data <- function(beta, n.obs, Sig) {
@@ -28,37 +29,42 @@
 #' data <- generate.logistic.data(beta, n, solve(Siginv))
 #' ppi <- 2/p
 #'
-#' zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
-#' gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
+#' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 #'                          ppi = ppi)
 #'
-#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1,
+#' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1,
 #'           nsamples = 1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 #'
-plot_pdmp <- function(pdmp_res, coords = 1:2, inds = 1:10^3, nsamples = 10^3, burn = 0.1, mcmc_samples=NULL){
+plot_pdmp <- function(pdmp_res, coords = 1:2, inds = 1:10^3, nsamples = 10^3,
+                      burn = 0.1, mcmc_samples=NULL, pch = 20){
   ndim <- length(coords)
+  opar <- par(no.readonly = TRUE)
+  on.exit(par(opar))
   par(mfrow = c(ndim,ndim),
       mar = rep(2,4))
   samples <- gen_sample(pdmp_res$positions, pdmp_res$times,theta = pdmp_res$theta,
-                                   nsample = nsamples, burn = burn*length(pdmp_res$times))
+                        nsample = nsamples, burn = burn*length(pdmp_res$times))
   for( i in 1:ndim ){
     for(j in 1:ndim ){
       if(i == j & nsamples > 0){
-        plot(density(samples$x[coords[i],]), main='',xlab='', ylab='')
+        ds <- density(samples$x[coords[i],])
+        plot(ds, main='',xlab='', ylab='')
         if(!is.null(mcmc_samples)){
-          lines(density(mcmc_samples[,coords[i]]), col = 'blue')
+          lines(density(mcmc_samples[,coords[i]], bw = ds$bw), col = 'blue')
         }
       }
       if( i != j ){
         xrange <- range(c(samples$x[coords[i],], pdmp_res$positions[coords[i],inds]))
         yrange <- range(c(samples$x[coords[j],], pdmp_res$positions[coords[j],inds]))
-        plot(pdmp_res$positions[coords[i],inds], pdmp_res$positions[coords[j],inds],xlim = xrange, ylim = yrange, type = 'l', main = '')
-        points(samples$x[coords[i],], samples$x[coords[j],], col = 'red', pch = '.')
+        plot(pdmp_res$positions[coords[i],inds], pdmp_res$positions[coords[j],inds],
+             xlim = xrange, ylim = yrange, type = 'l', main = '')
+        points(samples$x[coords[i],], samples$x[coords[j],], col = 'red', pch = pch)
         if(!is.null(mcmc_samples)){
-          points(mcmc_samples[,coords[i]], mcmc_samples[,coords[j]], col = 'blue', pch = '.')
+          points(mcmc_samples[,coords[i]], mcmc_samples[,coords[j]], col = 'blue', pch = pch)
         }
       }
     }
@@ -74,6 +80,7 @@ plot_pdmp <- function(pdmp_res, coords = 1:2, inds = 1:10^3, nsamples = 10^3, bu
 #' @param nsamples Number of samples to generate and use for marginal density estimates of the PDMP methods
 #' @param burn Percentage of events to use as burn-in. Should be between 0 and 1, default 0.1.
 #' @param mcmc_samples Optional Matrix of samples from an MCMC method. Each row should be a sample.
+#' @param pch The graphics parameter for off diagonal plots. Default is 20.
 #' @return Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories
 #' @examples
 #' generate.logistic.data <- function(beta, n.obs, Sig) {
@@ -106,8 +113,10 @@ plot_pdmp <- function(pdmp_res, coords = 1:2, inds = 1:10^3, nsamples = 10^3, bu
 #'                       nsamples = 1e4, burn = .1)
 #'
 plot_pdmp_multiple <- function(list_pdmp, coords = 1:2, inds = 1:10^3,
-         nsamples = 10^3, burn = 0.1, mcmc_samples=NULL){
+         nsamples = 10^3, burn = 0.1, mcmc_samples=NULL, pch = 19){
   ndim <- length(coords)
+  opar <- par(no.readonly = TRUE)
+  on.exit(par(opar))
   par(mfrow = c(ndim,ndim),
       mar = rep(2,4))
   nres <- length(list_pdmp)
@@ -118,9 +127,10 @@ plot_pdmp_multiple <- function(list_pdmp, coords = 1:2, inds = 1:10^3,
   for( i in 1:ndim ){
     for(j in 1:ndim ){
       if(i == j & nsamples > 0){
-        plot(density(samples[[1]]$x[coords[i],]), main='',xlab='', ylab='', col = colres[1])
+        ds <- density(samples[[1]]$x[coords[i],])
+        plot(ds, main='',xlab='', ylab='', col = colres[1])
         for( r in 2:nres){
-          lines(density(samples[[r]]$x[coords[i],]), col = colres[r])
+          lines(density(samples[[r]]$x[coords[i],], bw = ds$bw), col = colres[r])
         }
         if(!is.null(mcmc_samples)){
           lines(density(mcmc_samples[,coords[i]]), col = 'blue')
@@ -132,14 +142,14 @@ plot_pdmp_multiple <- function(list_pdmp, coords = 1:2, inds = 1:10^3,
 
         plot(list_pdmp[[1]]$positions[coords[i],inds], list_pdmp[[1]]$positions[coords[j],inds],xlim = xrange,
              ylim = yrange, type = 'l', main = '', col = colres[1])
-        points(samples[[1]]$x[coords[i],], samples[[1]]$x[coords[j],], col = colres[1], pch = '.')
+        points(samples[[1]]$x[coords[i],], samples[[1]]$x[coords[j],], col = colres[1], pch = pch)
         for( r in 2:nres){
           lines(list_pdmp[[r]]$positions[coords[i],inds], list_pdmp[[r]]$positions[coords[j],inds], col = colres[r])
-          points(samples[[r]]$x[coords[i],], samples[[r]]$x[coords[j],], col = colres[r], pch = '.')
+          points(samples[[r]]$x[coords[i],], samples[[r]]$x[coords[j],], col = colres[r], pch = pch)
         }
 
         if(!is.null(mcmc_samples)){
-          points(mcmc_samples[,coords[i]], mcmc_samples[,coords[j]], col = 'blue', pch = '.')
+          points(mcmc_samples[,coords[i]], mcmc_samples[,coords[j]], col = 'blue', pch = pch)
         }
       }
     }

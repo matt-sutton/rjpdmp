@@ -42,10 +42,10 @@
 //'
 //' set.seed(1)
 //' ppi_val <- 1/4
-//' res <- zigzag_rr(maxTime = 5, dataX = dataX, datay = dataY,
+//' res <- zigzag_rr(maxTime = 1, dataX = dataX, datay = dataY,
 //'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
 //'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
-//' plot_pdmp(res, coords = 1:3, inds = 1:10^4)
+//' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
 //'
 //' @export
 // [[Rcpp::export]]
