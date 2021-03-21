@@ -19,7 +19,7 @@
 //' @param theta0 Initial velocity for the sampler (Default has 1s on all components). This should be chosen with unit velocities on each component (regardless of sign).
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
-//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
+//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.
 //' @param burn Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
 //' @return \code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
@@ -52,15 +52,15 @@
 //' gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 //'                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
 //'                          ppi = ppi)
-//'
-//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
+//'\dontrun{
+//' plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:1e3,burn = .1, nsamples = 1e4,
 //'            mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
-//'
+//'}
 //' @export
 // [[Rcpp::export]]
 List zigzag_logit(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                     double prior_sigma2, arma::vec x0, arma::vec theta0,
-                    double rj_val = 0.6, double ppi=0.5, int nmax = 10^6, int burn = -1){
+                    double rj_val = 0.6, double ppi=0.5, int nmax = 1e6, int burn = -1){
   int mini = 1, p = x0.size(), nEvent= 1;
   double eps = 1e-10, t = 0, upper, val, tau_val;
 
@@ -213,7 +213,7 @@ bool check_cv(arma::uvec inds_off_hp_cv, arma::uvec inds_off_hp){
 //' @param cvref Control variate vector of dimension p for subsampling. If no control variate set to a vector of zeros.
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
-//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
+//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.
 //' @param burn Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
 //' @return \code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
@@ -239,6 +239,7 @@ bool check_cv(arma::uvec inds_off_hp_cv, arma::uvec inds_off_hp){
 //' data <- generate.logistic.data(beta, n, solve(Siginv))
 //' ppi <- 2/p
 //'
+//'\dontrun{
 //' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
 //'                            datay = data$dataY, prior_sigma2 = 10,
 //'                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
@@ -255,14 +256,14 @@ bool check_cv(arma::uvec inds_off_hp_cv, arma::uvec inds_off_hp){
 //'                          ppi = ppi)
 //'
 //' plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, burn = .1,
-//'                    inds = 1:10^2, nsamples = 1e4,
+//'                    inds = 1:1e2, nsamples = 1e4,
 //'                    mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
-//'
+//'}
 //' @export
 // [[Rcpp::export]]
 List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                     double prior_sigma2, arma::vec x0, arma::vec theta0, arma::vec cvref,
-                    double rj_val = 0.6, double ppi=0.5, int nmax = 10^6, int burn = -1){
+                    double rj_val = 0.6, double ppi=0.5, int nmax = 1e6, int burn = -1){
   int mini = 1, p = x0.size(), nEvent= 1, n_obs = dataX.n_rows;
   double eps = 1e-10, t = 0, upper, val, tau_val;
   bool use_cv = false;
@@ -302,18 +303,19 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
   arma::rowvec dataXi(p);
   for( int i =0; i<n_obs; i++){
     dataXi = dataX.row(i);
-    X_cv_2(i) = sqrt(sum(dataXi(inds_off_hp_cv)%dataXi(inds_off_hp_cv)));
+    X_cv_2(i) = std::sqrt(sum(dataXi(inds_off_hp_cv)%dataXi(inds_off_hp_cv)));
   }
   for(unsigned int i =0; i< inds_off_hp_cv.size(); i++){
     C_cv(inds_off_hp_cv(i)) = n_obs*0.25*arma::max(arma::abs(dataX.col(inds_off_hp_cv(i)))%X_cv_2);
   }
-
+  int off_size =1;
   use_cv = check_cv(inds_off_hp_cv, inds_off_hp);
   if(use_cv){
     ref_rate = sum(arma::max(theta(inds_off_hp)%grad_cv(inds_off_hp_cv),arma::zeros(cv_size)));
     a_vals(inds_off_hp) = ref_rate + arma::norm(x(inds_off_hp) - cvref(inds_off_hp),2) * C_cv(inds_off_hp) +
       x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;
-    b_vals(inds_off_hp) = C_cv(inds_off_hp)*sqrt(inds_off_hp.size()) +
+    off_size = inds_off_hp.size();
+    b_vals(inds_off_hp) = C_cv(inds_off_hp)*std::sqrt(off_size) +
       theta(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;// fix later for general
   } else {
     a_vals(inds_off_hp) = C_ss(inds_off_hp) + x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;
@@ -360,7 +362,8 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
         ref_rate = sum(arma::max(theta(inds_off_hp)%grad_cv(inds_off_hp),arma::zeros(cv_size)));
         a_vals(inds_off_hp) = ref_rate + arma::norm(x(inds_off_hp) - cvref(inds_off_hp),2) * C_cv(inds_off_hp) +
           x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;
-        b_vals(inds_off_hp) = C_cv(inds_off_hp)*sqrt(inds_off_hp.size()) +
+        off_size = inds_off_hp.size();
+        b_vals(inds_off_hp) = C_cv(inds_off_hp)*std::sqrt(off_size) +
           theta(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;// fix later for general
       } else {
         a_vals(inds_off_hp) = C_ss(inds_off_hp) + x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;
@@ -388,7 +391,8 @@ List zigzag_logit_ss(double maxTime, const arma::mat& dataX, const arma::vec& da
         ref_rate = sum(arma::max(theta(inds_off_hp)%grad_cv(inds_off_hp_cv),arma::zeros(cv_size)));
         a_vals(inds_off_hp) = ref_rate + arma::norm(x(inds_off_hp) - cvref(inds_off_hp),2) * C_cv(inds_off_hp) +
           x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;
-        b_vals(inds_off_hp) = C_cv(inds_off_hp)*sqrt(inds_off_hp.size()) +
+        off_size = inds_off_hp.size();
+        b_vals(inds_off_hp) = C_cv(inds_off_hp)*std::sqrt(off_size) +
           theta(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;// fix later for general
       } else {
         a_vals(inds_off_hp) = C_ss(inds_off_hp) + x(inds_off_hp)%theta(inds_off_hp)/prior_sigma2;

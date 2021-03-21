@@ -2,18 +2,18 @@
 #define INVERSION_H
 
 // Simulate from a + bs
-double linear_inv_t(double a, double b, double u) {
+double linear_inv_t(double a = 0.0, double b = 0.0, double u = 1.0) {
   if( (a < 0) & (b > 0)){
-    return(-a/b+sqrt(-2*log(u)/b));
+    return(-a/b+std::sqrt(-2*log(u)/b));
   } else if ( (a > 0) & (b < 0) ){
-    if(-pow(a,2)/b + pow(-a,2)/(2*b) >= -log(u)){
-      return(-a/b -sqrt(pow(a/b,2) - 2*log(u)/b));
+    if(-pow(a,2)/b + std::pow(-a,2)/(2*b) >= -log(u)){
+      return(-a/b -std::sqrt(std::pow(a/b,2) - 2*log(u)/b));
     } else {
       return(R_PosInf);
     }
 
   } else if ( (a >= 0) & (b > 0) ){
-    return(-a/b + sqrt(pow(a/b,2) - 2*log(u)/b));
+    return(-a/b + std::sqrt(std::pow(a/b,2) - 2*log(u)/b));
 
   } else if ( (a > 0) & (b == 0) ){
     return(-log(u)/a);

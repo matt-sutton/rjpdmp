@@ -10,8 +10,8 @@ gibbs_logit(
   beta,
   gamma,
   ppi = 0.5,
-  nsamples = 10^5L,
-  maxTime = 10^8,
+  nsamples = 100000L,
+  maxTime = 1e+08,
   prior_sigma2 = 10
 )
 }
@@ -74,8 +74,8 @@ zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
 gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
                          ppi = ppi)
-
-plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1,
+\dontrun{
+plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:1e3,burn = .1,
           nsamples = 1e4, mcmc_samples =t(gibbs_fit$beta*gibbs_fit$gamma))
-
+}
 }

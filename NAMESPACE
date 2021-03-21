@@ -1,6 +1,6 @@
 useDynLib(rjpdmp, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
-importFrom(graphics, lines, par, points)
+importFrom(graphics, lines, par, points, plot, legend)
 importFrom(grDevices, rainbow)
 importFrom(stats, density)
 import(data.table)

@@ -14,7 +14,7 @@ bps_n_logit(
   ref = 0.1,
   rj_val = 0.6,
   ppi = 0.5,
-  nmax = 10^6L,
+  nmax = 1000000L,
   burn = -1L
 )
 }
@@ -37,7 +37,7 @@ bps_n_logit(
 
 \item{ppi}{Double for the prior probability of inclusion (ppi) for each parameter.}
 
-\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.}
+\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.}
 
 \item{burn}{Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.}
 }
@@ -73,17 +73,17 @@ Siginv[1,2] <- Siginv[2,1] <- 0.9
 set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
-
+\dontrun{
 bps_fit <- bps_n_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                           prior_sigma2 = 10, theta0 = rep(0, p),
                           x0 = rep(0, p), ref = 0.1, rj_val = 0.6,
-                          ppi = ppi)
+                          ppi = ppi, nmax = 1e6, burn = -1)
 
 gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma =rep(0,p),
                          ppi = ppi)
 
-plot_pdmp(bps_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
+plot_pdmp(bps_fit, coords = 1:2, inds = 1:1e3,burn = .1, nsamples = 1e4,
           mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
-
+}
 }

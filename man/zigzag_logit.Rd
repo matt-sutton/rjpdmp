@@ -13,7 +13,7 @@ zigzag_logit(
   theta0,
   rj_val = 0.6,
   ppi = 0.5,
-  nmax = 10^6L,
+  nmax = 1000000L,
   burn = -1L
 )
 }
@@ -34,7 +34,7 @@ zigzag_logit(
 
 \item{ppi}{Double for the prior probability of inclusion (ppi) for each parameter.}
 
-\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.}
+\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.}
 
 \item{burn}{Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.}
 }
@@ -78,8 +78,8 @@ zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
                          ppi = ppi)
-
-plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4,
+\dontrun{
+plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:1e3,burn = .1, nsamples = 1e4,
            mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
-
+}
 }

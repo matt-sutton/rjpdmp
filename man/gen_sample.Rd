@@ -49,9 +49,11 @@ ppi <- 2/p
 zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
                            ppi = ppi)
+\dontrun{
 samples <- gen_sample(zigzag_fit$positions, zigzag_fit$times, 10^4)
 
 plot(zigzag_fit$positions[1,],zigzag_fit$positions[2,], type = 'l', xlab = 'x1', ylab = 'x2')
 points(samples$xx[1,], samples$xx[2,], col='red', pch=20)
+}
 
 }

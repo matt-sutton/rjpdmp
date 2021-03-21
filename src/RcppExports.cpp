@@ -91,13 +91,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // gibbs_logit
-List gibbs_logit(arma::mat dataX, arma::vec datay, arma::vec beta, arma::vec gamma, double ppi, int nsamples, double maxTime, double prior_sigma2);
+List gibbs_logit(const arma::mat& dataX, const arma::vec& datay, arma::vec beta, arma::vec gamma, double ppi, int nsamples, double maxTime, double prior_sigma2);
 RcppExport SEXP _rjpdmp_gibbs_logit(SEXP dataXSEXP, SEXP dataySEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP ppiSEXP, SEXP nsamplesSEXP, SEXP maxTimeSEXP, SEXP prior_sigma2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type dataX(dataXSEXP);
-    Rcpp::traits::input_parameter< arma::vec >::type datay(dataySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dataX(dataXSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type datay(dataySEXP);
     Rcpp::traits::input_parameter< arma::vec >::type beta(betaSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< double >::type ppi(ppiSEXP);

@@ -32,12 +32,14 @@
 #' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
+#' \dontrun{
 #' a <- models_visited(zigzag_fit$theta)
 #'
 #' # Work out probability of top 10 most visited models and all marginal inclusion probabilities
 #' # specific model probabilities become trivially small for large dimensions
 #' b <- model_probabilities(zigzag_fit$times, zigzag_fit$positions,
 #'                          models = a[1:10,1:p], marginals=1:p)
+#' }
 #'
 #'
 model_probabilities <- function(times, positions, models = NULL, marginals = NULL, burnin = 1){
@@ -109,7 +111,9 @@ model_probabilities <- function(times, positions, models = NULL, marginals = NUL
 #' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p),
 #'                            rj_val = 0.6, ppi = ppi)
+#' \dontrun{
 #' models_visited(zigzag_fit$theta)
+#' }
 #'
 models_visited <- function(thetas){
   . <- NULL # necessity for data.table package dependency
@@ -151,7 +155,9 @@ models_visited <- function(thetas){
 #' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
+#' \dontrun{
 #' b <- marginal_mean(zigzag_fit$times, zigzag_fit$positions, zigzag_fit$theta, marginals=1:p)
+#' }
 #'
 marginal_mean <- function(times, positions, thetas, marginals = NULL, burnin = 1){
   ## Calc Marginal
@@ -205,11 +211,13 @@ marginal_mean <- function(times, positions, thetas, marginals = NULL, burnin = 1
 #' zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
 #'                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
 #'                            ppi = ppi)
+#' \dontrun{
 #' b <- cond_mean(zigzag_fit$times, zigzag_fit$positions, zigzag_fit$theta, theta_c = c(1,rep(0,p-1)))
+#' }
 #'
 cond_mean <- function(times, positions, thetas, theta_c, burnin = 1){
   eps = 1e-12
-  nonZeroindicies <- which(abs(theta_c) <1e-10)
+  nonZeroindicies <- which(abs(theta_c) >1e-10)
   nZ <- length(nonZeroindicies)
   maxIter <- length(times)
   cond_mean <- rep(0, nZ)

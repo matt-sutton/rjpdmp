@@ -1,18 +1,22 @@
 # Reversible Jump PDMP methods R package
 
-rjpdmp is an R package that provides an implementation of the reversible jump PDMP methods developed in the paper Reversible Jump PDMP Samplers for Variable Selection (Chevallier, Fearnhead, Sutton 2020, https://arxiv.org/abs/2010.11771). It also contains an implementation of a collapsed Gibbs sampler for variable selection in Logistic regression. Code for simulating Polya-Gamma simulating PG variables adapted from https://github.com/jgscott/helloPG.
+rjpdmp is an R package that provides an implementation of the reversible jump PDMP methods developed in the paper Reversible Jump PDMP Samplers for Variable Selection (Chevallier, Fearnhead, Sutton 2020, https://arxiv.org/abs/2010.11771). It also contains an implementation of a Gibbs sampler for variable selection in Logistic regression based on Polya-Gamma augmentation (code for simulating PG variables adapted from https://github.com/jgscott/helloPG).
 
 Installation
 ------------
 
-Use [devtools](https://github.com/r-lib/devtools) to install or install via CRAN:
+Either install from CRAN 
 
 ```R
-install.packages('rjpdmp')
+library(devtools)
+install_github("matt-sutton/rjpdmp")
+```
 
-# To install from GitHub
-# library(devtools)
-# install_github("matt-sutton/rjpdmp")
+or using [devtools](https://github.com/r-lib/devtools) to install:
+
+```R
+library(devtools)
+install_github("matt-sutton/rjpdmp")
 ```
 
 Example Usage (Logistic regression)
@@ -37,14 +41,14 @@ set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
 
-zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+zigzag_fit <- zigzag_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
                            ppi = ppi)
 
-gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
+gibbs_fit <- gibbs_logit(maxTime = 5, dataX = data$dataX, datay = data$dataY,
                          prior_sigma2 = 10,beta = rep(0,p), gamma = rep(0,p),
                          ppi = ppi)
 
-plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^3,burn = .1, nsamples = 1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
+plot_pdmp(zigzag_fit, coords = 1:2, inds = 1:10^4,burn = .1, nsamples = 5*1e4, mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
 ```
 

@@ -18,13 +18,14 @@
 //' @param ref Refreshment rate for BPS.
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
-//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
+//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.
 //' @param burn Optional number of iterations to use for burn-in. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
 //' @return \code{times}: Vector of event times where ZigZag process switches velocity or jumps models.
 //' @return \code{positions}: Matrix of positions at which event times occur, these are not samples from the PDMP.
 //' @return \code{theta}: Matrix of new velocities at event times.
 //' @examples
+//'
 //'
 //' generate.rr.data <- function(beta, n, Sig, noise, interc = TRUE) {
 //' p <- length(beta)-(interc == TRUE)
@@ -40,20 +41,20 @@
 //' set.seed(1)
 //' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 //' dataX <- data$dataX; dataY <- data$dataY
-//'
+//'\dontrun{
 //' set.seed(1)
 //' ppi_val <- 1/4
 //' res <- bps_s_rr(maxTime = 1, dataX = dataX, datay = dataY,
-//'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
-//'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
+//'                  prior_sigma2 = 1e2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
+//'                  rj_val = 0.6, ppi = ppi_val, nmax = 1e5)
 //'
-//' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
-//'
+//' plot_pdmp(res, coords = 1:3, inds = 1:1e3)
+//'}
 //' @export
 // [[Rcpp::export]]
 List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                  double prior_sigma2,arma::vec x0, arma::vec theta0, double ref = 0.1,
-                 double rj_val = 0.5, double ppi=0.5, int nmax = 10^6, int burn = -1){
+                 double rj_val = 0.5, double ppi=0.5, int nmax = 1e6, int burn = -1){
   int p = x0.size(), nEvent= 1;
   double eps = 1e-10, epsbig = 0.5, t = 0, upper, tau_val, alpha;
 
@@ -61,7 +62,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
   arma::vec sk_times(nmax), theta = theta0, taus(p+2), x = x0, en_variables(p), ab_vals(2);
 
   // Later functionality will take these as arguments
-  double m = 0.5, sigma2_small = 1, sigma2_large = 10^2;
+  double m = 0.5, sigma2_small = 1, sigma2_large = 1e2;
 
   taus.zeros(); ab_vals.zeros(); sk_times.zeros(), en_variables.zeros();
   arma::wall_clock timer;
@@ -246,7 +247,7 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //' @param ref Refreshment rate for BPS.
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
-//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
+//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.
 //' @param burn Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
 //' @return \code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
@@ -268,26 +269,26 @@ List bps_s_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
 //' set.seed(1)
 //' data <- generate.rr.data(beta,n,diag(1,p+1), noise = 2, interc = FALSE)
 //' dataX <- data$dataX; dataY <- data$dataY
-//'
+//'\dontrun{
 //' set.seed(1)
 //' ppi_val <- 1/4
 //' res <- bps_n_rr(maxTime = 1, dataX = dataX, datay = dataY,
-//'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
-//'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
+//'                  prior_sigma2 = 1e2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
+//'                  rj_val = 0.6, ppi = ppi_val, nmax = 1e5, ref = 0.1, burn = -1)
 //'
-//' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
-//'
+//' plot_pdmp(res, coords = 1:3, inds = 1:1e3)
+//'}
 //' @export
 // [[Rcpp::export]]
 List bps_n_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                  double prior_sigma2, arma::vec x0, arma::vec theta0, double ref = 0.1, double rj_val = 0.5,
-                 double ppi=0.5, int nmax = 10^6, int burn = -1){
+                 double ppi=0.5, int nmax = 1e6, int burn = -1){
 
   int p = x0.size(), nEvent= 1;
   double eps = 1e-10, epsbig = 0.5, t = 0, upper, tau_val, alpha;
 
   // Later functionality will take these as arguments
-  double m = 0.5, sigma2_small = 1, sigma2_large = 10^2;
+  double m = 0.5, sigma2_small = 1, sigma2_large = 1e2;
 
   arma::mat sk_points(p,nmax), sk_theta(p,nmax);
   arma::vec sk_times(nmax), theta = theta0, taus(p+2), x = x0, en_variables(p), ab_vals(2);

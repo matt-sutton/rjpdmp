@@ -17,7 +17,7 @@
 //' @param theta0 Initial velocity for the sampler (Default has 1s on all components). This should be chosen with unit velocities on each component (regardless of sign).
 //' @param rj_val Reversible jump parameter for the PDMP method. This value is fixed over all models and is interpreted as the probability to jump to a reduced model when a parameter hits zero.
 //' @param ppi Double for the prior probability of inclusion (ppi) for each parameter.
-//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.
+//' @param nmax Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.
 //' @param burn Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.
 //' @return Returns a list with the following objects:
 //' @return \code{times}: Vector of event times where ZigZag process switchs velocity or jumps models.
@@ -43,20 +43,22 @@
 //' set.seed(1)
 //' ppi_val <- 1/4
 //' res <- zigzag_rr(maxTime = 1, dataX = dataX, datay = dataY,
-//'                  prior_sigma2 = 10^2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
-//'                  rj_val = 0.6, ppi = ppi_val, nmax = 10^5)
-//' plot_pdmp(res, coords = 1:3, inds = 1:10^3)
+//'                  prior_sigma2 = 1e2, x0 = rep(0,p+1), theta0 = rep(0,p+1),
+//'                  rj_val = 0.6, ppi = ppi_val, nmax = 1e5)
+//'\dontrun{
+//' plot_pdmp(res, coords = 1:3, inds = 1:1e3)
+//'}
 //'
 //' @export
 // [[Rcpp::export]]
 List zigzag_rr(double maxTime, const arma::mat& dataX, const arma::vec& datay,
                double prior_sigma2, arma::vec x0, arma::vec theta0, double rj_val = 0.5, double ppi=0.5,
-               int nmax = 10^6, int burn = -1){
+               int nmax = 1e6, int burn = -1){
   int mini = 1, p = x0.size(), nEvent= 1;
   double eps = 1e-10, t = 0, grad_val, upper, val, tau_val;
 
   // Later functionality will take these as arguments
-  double m = 0.5, sigma2_small = 1, sigma2_large = 10^2;
+  double m = 0.5, sigma2_small = 1, sigma2_large = 1e2;
 
   arma::mat ab_vals(p,2), sk_points(p,nmax), sk_theta(p,nmax);
   arma::vec sk_times(nmax), theta = theta0, taus(p), x = x0;

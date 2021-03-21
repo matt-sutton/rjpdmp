@@ -11,7 +11,8 @@ plot_pdmp_multiple(
   nsamples = 10^3,
   burn = 0.1,
   mcmc_samples = NULL,
-  pch = 19
+  pch = 20,
+  cols = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ plot_pdmp_multiple(
 \item{mcmc_samples}{Optional Matrix of samples from an MCMC method. Each row should be a sample.}
 
 \item{pch}{The graphics parameter for off diagonal plots. Default is 20.}
+
+\item{cols}{Colours to be used for plotting the PDMPs and MCMC samples (in order).}
 }
 \value{
 Generates a plot of the marginal density on the diagonal and pairs plots of the trajectories
@@ -58,11 +61,13 @@ zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,datay =data$dataY,
                            prior_sigma2 = 10,theta0 = rep(0, p),
                            x0 = rep(0, p), rj_val = 0.6,
                            ppi = ppi)
+\dontrun{
 bps_fit <- bps_n_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                        prior_sigma2 = 10, theta0 = rep(0, p), x0 = rep(0, p),
                        ref = 0.1, rj_val = 0.6,ppi = ppi)
 
-plot_pdmp_multiple(list(zigzag_fit,bps_fit), coords = 1:2, inds = 1:10^3,
+plot_pdmp_multiple(list(zz=zigzag_fit,bps=bps_fit), coords = 1:2, inds = 1:10^3,
                       nsamples = 1e4, burn = .1)
+}
 
 }

@@ -37,6 +37,8 @@ ppi <- 2/p
 zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX, datay = data$dataY,
                            prior_sigma2 = 10,theta0 = rep(0, p), x0 = rep(0, p),
                            rj_val = 0.6, ppi = ppi)
+\dontrun{
 models_visited(zigzag_fit$theta)
+}
 
 }

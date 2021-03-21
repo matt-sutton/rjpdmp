@@ -14,7 +14,7 @@ zigzag_logit_ss(
   cvref,
   rj_val = 0.6,
   ppi = 0.5,
-  nmax = 10^6L,
+  nmax = 1000000L,
   burn = -1L
 )
 }
@@ -37,7 +37,7 @@ zigzag_logit_ss(
 
 \item{ppi}{Double for the prior probability of inclusion (ppi) for each parameter.}
 
-\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 10^6, lower values should be chosen for memory constraints if less iterations are desired.}
+\item{nmax}{Maximum number of iterations (simulated events) of the algorithm; will stop the algorithm when this number of iterations of the method have occured. Default value is 1e6, lower values should be chosen for memory constraints if less iterations are desired.}
 
 \item{burn}{Optional number of iterations to use for burnin. These are not stored so can be useful in memory intensive problems.}
 }
@@ -74,6 +74,7 @@ set.seed(1)
 data <- generate.logistic.data(beta, n, solve(Siginv))
 ppi <- 2/p
 
+\dontrun{
 zigzag_fit <- zigzag_logit(maxTime = 1, dataX = data$dataX,
                            datay = data$dataY, prior_sigma2 = 10,
                            theta0 = rep(0, p), x0 = rep(0, p), rj_val = 0.6,
@@ -90,7 +91,7 @@ gibbs_fit <- gibbs_logit(maxTime = 1, dataX = data$dataX, datay =data$dataY,
                          ppi = ppi)
 
 plot_pdmp_multiple(list(zigzag_fit,zigzag_fit_s), coords = 1:2, burn = .1,
-                   inds = 1:10^2, nsamples = 1e4,
+                   inds = 1:1e2, nsamples = 1e4,
                    mcmc_samples = t(gibbs_fit$beta*gibbs_fit$gamma))
-
+}
 }
