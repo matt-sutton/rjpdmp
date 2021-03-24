@@ -53,15 +53,23 @@ model_probabilities <- function(times, positions, models = NULL, marginals = NUL
     nMod <- nrow(models)
     prob_mod <- rep(0,nMod)
     for( Mi in 1:nMod ){
-      ZeroInds <- which( abs(models[Mi,]) < eps )
-      t_dirac = 0
+      t_in_model = 0
+      in_model <- FALSE
+      t_at_model <- 0
       for(i in burnin:(length(times)-1)){
-        if(all(abs(positions[-ZeroInds,i]) > eps) && all(abs(positions[ZeroInds,i]) < eps) &&
-           all(positions[ZeroInds,i+1] ==0) && all(abs(positions[-ZeroInds,i+1]) > 0) ){
-          t_dirac = t_dirac + times[i+1] - times[i]
+        if(all(abs(abs(thetas[,i]) - abs(models[Mi,])) < eps) & !(in_model)){
+          t_at_model <- times[i]
+          in_model <- TRUE
+        }
+        if(!all(abs(abs(thetas[,i]) - abs(models[Mi,])) < eps) & (in_model)){
+          t_in_model <- t_in_model + (times[i] - t_at_model)
+          in_model <- FALSE
         }
       }
-      prob_mod[Mi] <- t_dirac/(max(times)-times[burnin])
+      if(in_model){
+        t_in_model <- t_in_model + (times[i] - t_at_model)
+      }
+      prob_mod[Mi] <- exp(log(t_in_model) - log(max(times)-times[burnin]))
     }
     names(prob_mod) <- apply(models,1,function(s) paste(s, collapse = ''))
   }
@@ -74,7 +82,7 @@ model_probabilities <- function(times, positions, models = NULL, marginals = NUL
       ZeroInds <- marginals[Mi]
       t_dirac <- 0
       for(i in burnin:(length(times)-1)){
-        if( positions[ZeroInds,i] == 0 && positions[ZeroInds,i+1] == 0 ){
+        if( thetas[ZeroInds,i] == 0 && thetas[ZeroInds,i+1] == 0 ){
           t_dirac = t_dirac + times[i+1] - times[i]
         }
       }
@@ -82,7 +90,7 @@ model_probabilities <- function(times, positions, models = NULL, marginals = NUL
     }
     names(marginal_prob_inclusion) <- marginals
   }
-  return(list(prob_mod = prob_mod, marginal_prob = marginal_prob_inclusion))
+  return(list(prob_mod = sort(prob_mod,decreasing = T), marginal_prob = marginal_prob_inclusion))
 }
 
 #' Count the number of times a model is visited
